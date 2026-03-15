@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crowd Promo — Client OS</title>
+<meta name="description" content="Crowd Promo client project management dashboard">
+<meta name="theme-color" content="#080A0C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crowd Promo">
+<link rel="manifest" id="pwa-manifest-link">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080A0C;--surface:#0E1114;--card:#13161A;--card2:#181C21;--border:#232830;--border2:#2d3440;--accent:#C8F45A;--accent2:#9EE02A;--accent-dim:rgba(200,244,90,0.10);--text:#EDF0F4;--muted:#5A6270;--muted2:#8A94A0;--danger:#FF5C5C;--success:#3DDD82;--warn:#FFB347;--blue:#5B9CF6;--purple:#A78BFA;--pink:#F472B6;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Bebas Neue',sans-serif;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column}
+.app-nav{display:flex;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);height:52px;flex-shrink:0;z-index:50}
+.nav-logo{font-family:var(--display);font-size:22px;letter-spacing:1px;color:var(--accent);padding:0 24px;border-right:1px solid var(--border);height:100%;display:flex;align-items:center;user-select:none;flex-shrink:0}
+.nav-logo span{color:var(--text)}
+.nav-tabs{display:flex;height:100%}
+.nav-tab{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);padding:0 20px;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nav-tab:hover{color:var(--text)}.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-right{margin-left:auto;padding:0 20px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-date{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.timer-pill{display:none;align-items:center;gap:6px;background:var(--accent-dim);border:1px solid rgba(200,244,90,.2);border-radius:99px;padding:5px 12px;font-family:var(--mono);font-size:11px;color:var(--accent);cursor:pointer}
+.timer-pill.running{display:flex}
+.pulse{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 1.2s ease infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.view{display:none;flex:1;overflow:hidden}.view.active{display:flex}
+.btn{font-family:var(--mono);font-size:11px;font-weight:500;padding:8px 16px;border-radius:7px;border:none;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.btn-accent{background:var(--accent);color:#080A0C}.btn-accent:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+.btn-danger{background:rgba(255,92,92,.12);color:var(--danger);border:1px solid rgba(255,92,92,.2)}.btn-danger:hover{background:rgba(255,92,92,.2)}
+.btn-success{background:rgba(61,221,130,.12);color:var(--success);border:1px solid rgba(61,221,130,.2)}.btn-success:hover{background:rgba(61,221,130,.2)}
+.btn-sm{padding:5px 10px;font-size:10px}.btn-xs{padding:3px 8px;font-size:10px}
+.small-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:11px;padding:6px 9px;outline:none;transition:border-color .15s}
+.small-input:focus{border-color:rgba(200,244,90,.4)}.small-input::placeholder{color:var(--muted)}select.small-input{cursor:pointer}
+.be-input{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
+.be-input:focus{border-color:rgba(200,244,90,.4)}.be-input::placeholder{color:var(--muted)}select.be-input{cursor:pointer}
+.be-log-inp{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 6px;outline:none;width:80px}
+.be-log-inp:focus{border-color:rgba(200,244,90,.4)}.be-log-inp.wide{width:140px}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.modal-ov.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:28px;width:560px;max-width:95vw;max-height:92vh;overflow-y:auto}
+.modal-title{font-family:var(--display);font-size:24px;letter-spacing:.5px;margin-bottom:20px}
+.form-group{margin-bottom:14px}
+.form-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);display:block;margin-bottom:5px}
+.form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s}
+.form-input:focus{border-color:rgba(200,244,90,.4)}.form-input::placeholder{color:var(--muted)}select.form-input{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.cnav-badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;padding:2px 6px;border-radius:99px}
+.b-active{background:rgba(61,221,130,.1);color:var(--success);border:1px solid rgba(61,221,130,.2)}
+.b-hold{background:rgba(255,179,71,.1);color:var(--warn);border:1px solid rgba(255,179,71,.2)}
+.b-complete{background:rgba(91,156,246,.1);color:var(--blue);border:1px solid rgba(91,156,246,.2)}
+.tag{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.3px}
+.tag-timer{background:rgba(200,244,90,.1);color:var(--accent)}.tag-manual{background:rgba(91,156,246,.1);color:var(--blue)}
+.prog-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s ease}
+.prog-ok{background:var(--success)}.prog-warn{background:var(--warn)}.prog-over{background:var(--danger)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.text-muted{color:var(--muted);font-size:12px;font-family:var(--mono)}
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.sc-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sc-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2)}
+.sc-body{padding:16px 18px}
+.notes-ta{width:100%;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--sans);font-size:12px;padding:9px 11px;resize:vertical;min-height:80px;outline:none;transition:border-color .15s;line-height:1.5}
+.notes-ta:focus{border-color:rgba(200,244,90,.35)}.notes-ta::placeholder{color:var(--muted)}
+.empty-panel{padding:48px 24px;text-align:center;color:var(--muted)}.empty-panel h3{font-family:var(--display);font-size:22px;color:var(--muted2);margin-bottom:8px}
+/* DASHBOARD */
+.dash-layout{display:flex;flex:1;overflow:hidden}
+.dash-sidebar{width:256px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-section{padding:16px}.sidebar-section+.sidebar-section{border-top:1px solid var(--border)}
+.ss-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px}
+.stat-item{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.si-label{font-size:12px;color:var(--muted2)}.si-val{font-family:var(--mono);font-size:14px;font-weight:500}
+.si-val.green{color:var(--success)}.si-val.yellow{color:var(--accent)}.si-val.blue{color:var(--blue)}
+.revenue-big{font-family:var(--display);font-size:34px;letter-spacing:1px;color:var(--accent);line-height:1;margin-bottom:4px}
+.revenue-sub{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.cnav-item{padding:8px 10px;border-radius:7px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.cnav-item:hover{background:var(--card)}.cnav-item.active{background:var(--accent-dim);border:1px solid rgba(200,244,90,.15)}
+.cnav-name{font-size:13px;font-weight:500}
+.btn-addclient{display:flex;align-items:center;gap:6px;padding:9px 12px;border-radius:8px;border:1px dashed var(--border2);background:none;color:var(--muted2);cursor:pointer;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;transition:all .15s;width:100%;margin-top:8px}
+.btn-addclient:hover{border-color:var(--accent);color:var(--accent)}
+.dash-main{flex:1;overflow-y:auto;padding:24px}
+.detail-grid{display:grid;grid-template-columns:1fr 296px;gap:16px}
+.timer-widget{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.timer-display{font-family:var(--display);font-size:48px;letter-spacing:2px;color:var(--accent);line-height:1;min-width:160px}
+.timer-display.inactive{color:var(--muted)}
+.del-list{display:flex;flex-direction:column;gap:6px}
+.del-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.02);border-radius:7px;border:1px solid transparent;transition:all .12s}
+.del-row:hover{background:rgba(255,255,255,.04);border-color:var(--border)}
+.chk{width:17px;height:17px;border:1.5px solid var(--border2);border-radius:4px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .12s}
+.chk.done{background:var(--accent);border-color:var(--accent);color:#000}
+.del-text{flex:1;font-size:13px}.del-text.done{text-decoration:line-through;color:var(--muted)}
+.pri{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.3px;padding:2px 7px;border-radius:4px}
+.pri-high{background:rgba(255,92,92,.1);color:var(--danger)}.pri-med{background:rgba(255,179,71,.1);color:var(--warn)}.pri-low{background:rgba(91,156,246,.1);color:var(--blue)}
+.del-del-btn{opacity:0;background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 5px;border-radius:4px;transition:all .1s}
+.del-row:hover .del-del-btn{opacity:1}.del-del-btn:hover{color:var(--danger)}
+.log-table{width:100%;border-collapse:collapse;font-size:12px}
+.log-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.log-table td{padding:7px 10px;border-bottom:1px solid rgba(35,40,48,.5);vertical-align:middle}
+.log-table tr:last-child td{border-bottom:none}.log-table tr:hover td{background:rgba(255,255,255,.02)}
+.log-del-btn,.log-edit-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:2px 4px;border-radius:3px;opacity:0;transition:all .1s}
+.log-table tr:hover .log-del-btn,.log-table tr:hover .log-edit-btn{opacity:1}
+.log-del-btn:hover{color:var(--danger)}.log-edit-btn:hover{color:var(--accent)}
+.sow-link{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--accent-dim);border:1px solid rgba(200,244,90,.15);border-radius:8px;color:var(--accent);font-size:12px;font-family:var(--mono);text-decoration:none;transition:all .15s;word-break:break-all}
+.sow-link:hover{background:rgba(200,244,90,.16)}
+.no-sow{font-size:12px;color:var(--muted);font-family:var(--mono)}
+/* RESOURCE LINKS */
+.resource-links-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.rl-btn{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:12px;font-family:var(--mono);text-decoration:none;transition:all .15s;cursor:pointer;border:1px solid;width:100%;text-align:left}
+.rl-notion{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12);color:#e0e0e0}.rl-notion:hover{background:rgba(255,255,255,.09)}
+.rl-gdrive{background:rgba(66,133,244,.07);border-color:rgba(66,133,244,.2);color:#6eaaff}.rl-gdrive:hover{background:rgba(66,133,244,.14)}
+.rl-docs{background:rgba(66,133,244,.07);border-color:rgba(66,133,244,.2);color:#6eaaff}.rl-docs:hover{background:rgba(66,133,244,.14)}
+.rl-sheets{background:rgba(52,168,83,.07);border-color:rgba(52,168,83,.2);color:#4dcc7a}.rl-sheets:hover{background:rgba(52,168,83,.14)}
+.rl-figma{background:rgba(162,89,255,.07);border-color:rgba(162,89,255,.2);color:#c084fc}.rl-figma:hover{background:rgba(162,89,255,.14)}
+.rl-loom{background:rgba(103,76,230,.07);border-color:rgba(103,76,230,.2);color:#9b87f5}.rl-loom:hover{background:rgba(103,76,230,.14)}
+.rl-slack{background:rgba(200,100,210,.07);border-color:rgba(200,100,210,.2);color:#d980e8}.rl-slack:hover{background:rgba(200,100,210,.14)}
+.rl-clickup{background:rgba(119,80,255,.07);border-color:rgba(119,80,255,.2);color:#a78bfa}.rl-clickup:hover{background:rgba(119,80,255,.14)}
+.rl-asana{background:rgba(252,100,77,.07);border-color:rgba(252,100,77,.2);color:#fc7b64}.rl-asana:hover{background:rgba(252,100,77,.14)}
+.rl-default{background:rgba(255,255,255,.03);border-color:var(--border);color:var(--muted2)}.rl-default:hover{background:rgba(255,255,255,.07);color:var(--text)}
+.rl-icon{font-size:15px;flex-shrink:0}.rl-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-remove{margin-left:auto;opacity:0;background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:1px 4px;border-radius:3px;flex-shrink:0}
+.rl-btn:hover .rl-remove{opacity:1}.rl-remove:hover{color:var(--danger)}
+/* BACKEND */
+.backend-layout{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.backend-toolbar{padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.backend-content{flex:1;overflow-y:auto;padding:24px}
+.be-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(480px,1fr));gap:18px}
+.be-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.be-card-header{padding:14px 18px;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.be-card-name{font-family:var(--display);font-size:20px;letter-spacing:.5px}
+.be-card-body{padding:18px}
+.be-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.be-field{display:flex;flex-direction:column;gap:4px}.be-field.full{grid-column:1/-1}
+.be-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.be-log-section{margin-top:14px;border-top:1px solid var(--border);padding-top:14px}
+.be-log-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
+.be-log-table{width:100%;border-collapse:collapse;font-size:11px}
+.be-log-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:4px 8px;text-align:left}
+.be-log-table td{padding:5px 8px;border-bottom:1px solid rgba(35,40,48,.4);vertical-align:middle}
+.be-log-table tr:last-child td{border-bottom:none}
+.timer-be{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(200,244,90,.06);border:1px solid rgba(200,244,90,.12);border-radius:8px;margin-bottom:14px;flex-wrap:wrap}
+.timer-be-display{font-family:var(--display);font-size:28px;color:var(--accent);letter-spacing:1px;min-width:90px}
+.timer-be-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+/* ANALYTICS */
+.an-layout{flex:1;overflow-y:auto;padding:28px 32px;display:block}
+.an-layout::-webkit-scrollbar{width:4px}
+.an-hdr{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.an-title{font-family:var(--display);font-size:40px;letter-spacing:1px;line-height:1}
+.an-sub{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:5px}
+.an-grid-top{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.an-stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;position:relative;overflow:hidden}
+.an-stat-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.an-stat-card.ac::before{background:var(--accent)}
+.an-stat-card.gr::before{background:var(--success)}
+.an-stat-card.bl::before{background:var(--blue)}
+.an-stat-card.or::before{background:var(--warn)}
+.an-stat-card.pu::before{background:var(--purple)}
+.an-stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px}
+.an-stat-val{font-family:var(--display);font-size:32px;letter-spacing:1px;line-height:1;margin-bottom:3px}
+.an-stat-sub{font-family:var(--mono);font-size:10px;color:var(--muted2)}
+.an-trend{font-family:var(--mono);font-size:10px;margin-top:4px}
+.an-trend.up{color:var(--success)}.an-trend.dn{color:var(--danger)}.an-trend.eq{color:var(--muted)}
+.an-grid-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.an-grid-charts-3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.an-row-full{margin-bottom:16px}
+.an-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.an-card-hdr{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.an-card-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2)}
+.an-card-badge{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:4px;background:var(--accent-dim);color:var(--accent);text-transform:uppercase;letter-spacing:.5px}
+.an-card-body{padding:18px}
+canvas{display:block}
+.chart-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted2)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.legend-line{width:16px;height:2px;flex-shrink:0;border-radius:1px}
+.bk-table{width:100%;border-collapse:collapse}
+.bk-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.bk-table td{padding:9px 12px;border-bottom:1px solid rgba(35,40,48,.4);font-size:13px;vertical-align:middle}
+.bk-table tr:last-child td{border-bottom:none}.bk-table tr:hover td{background:rgba(255,255,255,.02)}
+.trend-chip{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:3px}
+.trend-up{background:rgba(61,221,130,.1);color:var(--success)}.trend-dn{background:rgba(255,92,92,.1);color:var(--danger)}.trend-eq{background:rgba(90,98,112,.15);color:var(--muted)}
+.mo-selector{display:flex;gap:6px;flex-wrap:wrap}
+.mo-btn{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted2);cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.3px}
+.mo-btn:hover{color:var(--text);border-color:var(--border2)}
+.mo-btn.active{background:var(--accent-dim);border-color:rgba(200,244,90,.3);color:var(--accent)}
+.sparkbar{display:inline-flex;align-items:flex-end;gap:1px;height:18px;vertical-align:middle}
+.sparkbar-col{width:4px;background:var(--accent);border-radius:1px;opacity:.7}
+.utilization-ring-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.util-ring-labels{display:flex;flex-direction:column;gap:10px}
+.util-ring-item{display:flex;flex-direction:column;gap:2px}
+.url-name{font-size:12px;font-weight:500}
+.url-pct{font-family:var(--mono);font-size:11px}
+.revenue-goal-wrap{display:flex;align-items:center;gap:16px;padding:14px 18px;background:var(--accent-dim);border:1px solid rgba(200,244,90,.15);border-radius:8px;margin-bottom:16px;flex-wrap:wrap}
+.rg-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px}
+.rg-val{font-family:var(--display);font-size:24px;color:var(--accent);letter-spacing:.5px}
+.rg-bar-wrap{flex:1;min-width:200px}
+.rg-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px}
+.rg-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s ease}
+.gap-to-goal{font-family:var(--mono);font-size:11px;color:var(--muted2);margin-top:4px}
+
+/* ── NAV ICON BTN ── */
+.nav-icon-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;color:var(--muted2);font-size:13px;padding:5px 10px;cursor:pointer;transition:all .15s;font-family:var(--mono);font-size:11px;white-space:nowrap}
+.nav-icon-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.pwa-install-btn{background:var(--accent-dim);border-color:rgba(200,244,90,.3);color:var(--accent)}
+.pwa-install-btn:hover{background:rgba(200,244,90,.18)}
+/* ── NOTIFY MODAL SPECIFICS ── */
+.notify-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.ntab{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 18px;cursor:pointer;border:none;background:none;color:var(--muted2);border-bottom:2px solid transparent;transition:all .12s}
+.ntab:hover{color:var(--text)}.ntab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.ntab-panel{display:none}.ntab-panel.active{display:block}
+.notify-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.nc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.nc-row:last-child{margin-bottom:0}
+.nc-label{font-size:13px;flex:1}
+.nc-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{width:36px;height:20px;background:var(--border);border-radius:10px;cursor:pointer;position:relative;transition:background .2s;border:none;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.toggle.on::after{transform:translateX(16px)}
+.recipient-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.recip-row{display:flex;align-items:center;gap:6px}
+.recip-tag{display:flex;align-items:center;gap:5px;background:var(--accent-dim);border:1px solid rgba(200,244,90,.2);border-radius:5px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--accent)}
+.recip-rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0 2px}
+.recip-rm:hover{color:var(--danger)}
+.email-preview{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.6;color:var(--muted2);font-family:var(--mono);max-height:200px;overflow-y:auto;white-space:pre-wrap}
+.notif-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.green{background:var(--success)}.status-dot.red{background:var(--danger)}.status-dot.yellow{background:var(--warn)}
+.schedule-select{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 8px;outline:none;cursor:pointer}
+.schedule-select:focus{border-color:rgba(200,244,90,.4)}
+</style>
+</head>
+<body>
+<nav class="app-nav">
+  <div class="nav-logo">Crowd <span>Promo</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('dashboard')" id="tab-dashboard">⬡ Dashboard</button>
+    <button class="nav-tab" onclick="switchView('analytics')" id="tab-analytics">◈ Analytics</button>
+    <button class="nav-tab" onclick="switchView('backend')" id="tab-backend">⚙ Backend</button>
+  </div>
+  <div class="nav-right">
+    <div class="timer-pill" id="navTimerPill" onclick="switchView('dashboard')">
+      <span class="pulse"></span><span id="navTimerText">0:00:00</span>
+    </div>
+    <div class="nav-date" id="navDate"></div>
+    <button class="nav-icon-btn" onclick="openModal('notifyModal');syncNotifUI()" title="Notifications & Email (⌘B)" id="notifyBtn">🔔</button>
+    <button class="nav-icon-btn pwa-install-btn" id="pwaInstallBtn" onclick="installPWA()" title="Install as Desktop App" style="display:none">⬇ Install App</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="view active" id="view-dashboard">
+  <div class="dash-layout">
+    <aside class="dash-sidebar">
+      <div class="sidebar-section">
+        <div class="ss-label">Monthly Revenue</div>
+        <div class="revenue-big" id="sb-revenue">$0</div>
+        <div class="revenue-sub">contract total</div>
+        <div style="margin-top:12px" class="ss-label">Goal — $250k/mo</div>
+        <div class="prog-bar" style="height:6px;margin-top:6px"><div class="prog-fill prog-ok" id="sb-goal-bar" style="width:0%"></div></div>
+        <div id="sb-goal-pct" class="text-muted" style="margin-top:5px;font-size:10px"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="ss-label">Overview</div>
+        <div class="stat-item"><span class="si-label">Active Clients</span><span class="si-val green" id="sb-active">0</span></div>
+        <div class="stat-item"><span class="si-label">Hrs Committed</span><span class="si-val yellow" id="sb-committed">0</span></div>
+        <div class="stat-item"><span class="si-label">Hrs Tracked</span><span class="si-val blue" id="sb-tracked">0</span></div>
+        <div class="stat-item"><span class="si-label">Deliverables</span><span class="si-val" id="sb-dels">0/0</span></div>
+      </div>
+      <div class="sidebar-section" style="flex:1">
+        <div class="ss-label">Clients</div>
+        <div id="clientNavList"></div>
+        <button class="btn-addclient" onclick="openAddClient()">+ Add Client</button>
+      </div>
+    </aside>
+    <div class="dash-main" id="dashMain">
+      <div class="empty-panel"><h3>Select a Client</h3><p>Choose a client from the sidebar.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="view" id="view-analytics">
+  <div class="an-layout" id="analyticsLayout"></div>
+</div>
+
+<!-- BACKEND -->
+<div class="view" id="view-backend">
+  <div class="backend-layout">
+    <div class="backend-toolbar">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Backend Admin</span>
+      <button class="btn btn-accent btn-sm" onclick="openAddClient()">+ Add Client</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export</button>
+      <button class="btn btn-ghost btn-sm" onclick="importData()">⬆ Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+      <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+        <span class="text-muted">Total logged:</span><span class="si-val yellow" id="be-total-logged" style="font-size:13px">0h</span>
+        <span class="text-muted">Total value:</span><span class="si-val green" id="be-total-value" style="font-size:13px">$0</span>
+      </div>
+    </div>
+    <div class="backend-content"><div class="be-grid" id="beGrid"></div></div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-ov" id="clientModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Add Client</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Client Name *</label><input class="form-input" id="f-name" placeholder="e.g. The Diamond Girls"></div>
+      <div class="form-group"><label class="form-label">Service / Type</label><input class="form-input" id="f-type" placeholder="e.g. SEO + Web Design"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Scope of Work URL</label><input class="form-input" id="f-scope" type="url" placeholder="https://docs.google.com/..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Contract Value ($)</label><input class="form-input" id="f-contract" type="number" min="0" step="100" placeholder="5000"></div>
+      <div class="form-group"><label class="form-label">Monthly Retainer ($)</label><input class="form-input" id="f-retainer" type="number" min="0" step="100" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Hours Committed</label><input class="form-input" id="f-committed" type="number" min="0" step="1" placeholder="20"></div>
+      <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="f-status"><option value="active">Active</option><option value="hold">On Hold</option><option value="complete">Complete</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="f-notes" rows="3" placeholder="Context, contacts, status..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('clientModal')">Cancel</button>
+      <button class="btn btn-accent" id="modalSaveBtn" onclick="saveClient()">Add Client</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- NOTIFY + EMAIL MODAL -->
+<div class="modal-ov" id="notifyModal">
+  <div class="modal" style="width:580px;max-height:88vh">
+    <div class="modal-title">Notifications &amp; Email</div>
+    <div class="notify-tabs">
+      <button class="ntab active" onclick="switchNTab('desktop')">🔔 Desktop</button>
+      <button class="ntab" onclick="switchNTab('email')">✉ Email</button>
+      <button class="ntab" onclick="switchNTab('pwa')">📱 Install App</button>
+    </div>
+
+    <!-- DESKTOP NOTIFICATIONS -->
+    <div class="ntab-panel active" id="ntab-desktop">
+      <div id="notif-perm-status" class="notif-status" style="margin-bottom:14px">
+        <span class="status-dot yellow"></span><span>Checking permission...</span>
+      </div>
+      <div class="notify-card">
+        <div class="nc-row">
+          <div><div class="nc-label">Timer Reminders</div><div class="nc-sub">Notify when timer has been running for a while</div></div>
+          <button class="toggle" id="tog-timer" onclick="toggleNotifSetting('timer')"></button>
+        </div>
+        <div class="nc-row" style="padding-left:0">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Remind after</span>
+          <select class="schedule-select" id="timer-remind-mins">
+            <option value="30">30 min</option>
+            <option value="60" selected>1 hour</option>
+            <option value="120">2 hours</option>
+            <option value="180">3 hours</option>
+          </select>
+        </div>
+      </div>
+      <div class="notify-card">
+        <div class="nc-row">
+          <div><div class="nc-label">Daily Briefing</div><div class="nc-sub">Morning summary of active clients &amp; overdue deliverables</div></div>
+          <button class="toggle" id="tog-daily" onclick="toggleNotifSetting('daily')"></button>
+        </div>
+        <div class="nc-row">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Briefing time</span>
+          <input type="time" class="schedule-select" id="daily-time" value="08:00">
+        </div>
+      </div>
+      <div class="notify-card">
+        <div class="nc-row">
+          <div><div class="nc-label">Deadline Alerts</div><div class="nc-sub">Notify when deliverables contain dates that are approaching</div></div>
+          <button class="toggle" id="tog-deadline" onclick="toggleNotifSetting('deadline')"></button>
+        </div>
+      </div>
+      <div class="notify-card">
+        <div class="nc-row">
+          <div><div class="nc-label">Budget Warnings</div><div class="nc-sub">Alert when a client hits 80% or 100% of committed hours</div></div>
+          <button class="toggle" id="tog-budget" onclick="toggleNotifSetting('budget')"></button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-accent btn-sm" onclick="requestNotifPermission()">Enable Notifications</button>
+        <button class="btn btn-ghost btn-sm" onclick="sendTestNotif()">Send Test</button>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="ntab-panel" id="ntab-email">
+      <div class="notify-card">
+        <div class="nc-row">
+          <div><div class="nc-label">Email Method</div><div class="nc-sub">How emails are sent</div></div>
+          <select class="schedule-select" id="email-method" onchange="updateEmailMethod()">
+            <option value="gmail">Open Gmail compose</option>
+            <option value="mailto">Default mail app</option>
+            <option value="emailjs">EmailJS (auto-send)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="emailjs-config" style="display:none">
+        <div class="notify-card">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">EmailJS Config (free at emailjs.com)</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div><label class="form-label">Service ID</label><input class="form-input" id="ejs-service" placeholder="service_xxxxxxx"></div>
+            <div><label class="form-label">Template ID</label><input class="form-input" id="ejs-template" placeholder="template_xxxxxxx"></div>
+            <div><label class="form-label">Public Key</label><input class="form-input" id="ejs-pubkey" placeholder="your_public_key"></div>
+            <button class="btn btn-ghost btn-sm" onclick="saveEmailJSConfig()">Save Config</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="notify-card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Your Email</div>
+        <div style="display:flex;gap:6px">
+          <input class="form-input" id="my-email" placeholder="adrian@crowdpromo.com" style="flex:1">
+          <button class="btn btn-ghost btn-sm" onclick="saveMyEmail()">Save</button>
+        </div>
+      </div>
+
+      <div class="notify-card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Send Report To</div>
+        <div class="recipient-list" id="recipientList"></div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input class="form-input" id="new-recip" placeholder="email@client.com" style="flex:1" onkeydown="if(event.key==='Enter')addRecipient()">
+          <button class="btn btn-ghost btn-sm" onclick="addRecipient()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="notify-card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Email Schedule</div>
+        <div class="nc-row">
+          <div><div class="nc-label">Weekly Summary</div><div class="nc-sub">Send weekly digest to yourself</div></div>
+          <button class="toggle" id="tog-weekly-email" onclick="toggleNotifSetting('weekly-email')"></button>
+        </div>
+        <div class="nc-row" style="margin-top:8px">
+          <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">Send on</span>
+          <select class="schedule-select" id="weekly-day">
+            <option value="1">Monday</option>
+            <option value="5" selected>Friday</option>
+            <option value="0">Sunday</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-accent btn-sm" onclick="sendNowEmail('self')">✉ Send Summary to Me</button>
+        <button class="btn btn-ghost btn-sm" onclick="openClientEmailModal()">✉ Send to Client...</button>
+      </div>
+    </div>
+
+    <!-- PWA INSTALL -->
+    <div class="ntab-panel" id="ntab-pwa">
+      <div class="notify-card" style="text-align:center;padding:24px">
+        <div style="font-size:48px;margin-bottom:12px">📱</div>
+        <div style="font-family:var(--display);font-size:22px;margin-bottom:8px">Install as Desktop App</div>
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;line-height:1.6">Install Crowd Promo as a standalone app on your Mac or PC. It will get its own icon, open without a browser bar, and run independently.</div>
+        <div id="pwa-install-status" style="margin-bottom:16px"></div>
+        <button class="btn btn-accent" id="pwa-modal-install-btn" onclick="installPWA()" style="width:100%">⬇ Install to Desktop</button>
+      </div>
+      <div class="notify-card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Manual Install Steps</div>
+        <div style="font-size:12px;color:var(--muted2);line-height:1.8">
+          <strong style="color:var(--text)">Chrome / Edge:</strong> Click the install icon (⊕) in the address bar, or use the menu → "Install Crowd Promo"<br>
+          <strong style="color:var(--text)">Safari (Mac):</strong> File → Add to Dock<br>
+          <strong style="color:var(--text)">Auto-launch at startup:</strong> After installing, right-click the app icon → Options → Open at Login (Mac) or add to Startup folder (Windows)
+        </div>
+      </div>
+      <div class="notify-card">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Server Option</div>
+        <div style="font-size:12px;color:var(--muted2);line-height:1.6">For full PWA features (offline support, auto-updates), host this file on any server. Free options: <strong style="color:var(--text)">Netlify Drop</strong> (drag &amp; drop) or <strong style="color:var(--text)">Vercel</strong>. Once hosted, the install button will work automatically.</div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('notifyModal')">Close</button>
+      <button class="btn btn-accent" onclick="saveNotifSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT EMAIL MODAL -->
+<div class="modal-ov" id="clientEmailModal">
+  <div class="modal" style="width:540px">
+    <div class="modal-title">Send Report to Client</div>
+    <div class="form-group">
+      <label class="form-label">Select Client</label>
+      <select class="form-input" id="ce-client" onchange="previewClientEmail()"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Client Email</label>
+      <input class="form-input" id="ce-email" placeholder="client@company.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Preview</label>
+      <div class="email-preview" id="ce-preview">Select a client above to preview the email...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('clientEmailModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="sendClientEmail()">Send Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG MODAL -->
+<div class="modal-ov" id="logModal">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">Edit Log Entry</div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="lm-date" type="date"></div>
+    <div class="form-group"><label class="form-label">Duration (hours)</label><input class="form-input" id="lm-hours" type="number" min="0" step="0.25" placeholder="1.5"></div>
+    <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="lm-desc" placeholder="What was worked on..."></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('logModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveLogEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LINK MODAL -->
+<div class="modal-ov" id="linkModal">
+  <div class="modal" style="width:440px">
+    <div class="modal-title">Add Resource Link</div>
+    <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="lnk-label" placeholder="e.g. Project Notion, Client Drive, Figma File..."></div>
+    <div class="form-group"><label class="form-label">URL</label><input class="form-input" id="lnk-url" type="url" placeholder="https://..."></div>
+    <div class="form-group">
+      <label class="form-label">Platform (sets icon &amp; color)</label>
+      <select class="form-input" id="lnk-type">
+        <option value="notion">Notion</option>
+        <option value="gdrive">Google Drive</option>
+        <option value="docs">Google Docs</option>
+        <option value="sheets">Google Sheets</option>
+        <option value="figma">Figma</option>
+        <option value="loom">Loom</option>
+        <option value="slack">Slack</option>
+        <option value="clickup">ClickUp</option>
+        <option value="asana">Asana</option>
+        <option value="default">Other / Custom</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('linkModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveLink()">Add Link</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ CONSTANTS ═══
+const GOAL=250000;
+const SK='cpro_v3';
+const LINK_ICONS={notion:'⬜',gdrive:'📁',docs:'📄',sheets:'📊',figma:'🎨',loom:'🎬',slack:'💬',clickup:'✅',asana:'🔶',default:'🔗'};
+const LINK_NAMES={notion:'Notion',gdrive:'Drive',docs:'Docs',sheets:'Sheets',figma:'Figma',loom:'Loom',slack:'Slack',clickup:'ClickUp',asana:'Asana',default:'Link'};
+const COLORS=['#C8F45A','#5B9CF6','#3DDD82','#FFB347','#A78BFA','#F472B6','#38BDF8','#FB923C','#34D399','#F87171'];
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ═══ STATE ═══
+let clients=[], activeTimer=null, selectedClientId=null, editingClientId=null;
+let editingLogId=null, editingLogCid=null, linkTargetCid=null;
+
+function save(){ localStorage.setItem(SK,JSON.stringify(clients)); }
+function load(){
+  const raw=localStorage.getItem(SK);
+  if(raw){try{clients=JSON.parse(raw);}catch(e){clients=[];}}
+  else{clients=defaultClients();save();}
+  clients.forEach(c=>{if(!c.timeLogs)c.timeLogs=[];if(!c.deliverables)c.deliverables=[];if(!c.links)c.links=[];if(c.retainer===undefined)c.retainer=0;if(c.contract===undefined)c.contract=0;});
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).substr(2,6); }
+function today(off=0){ const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().slice(0,10); }
+function totalHours(c){ return (c.timeLogs||[]).reduce((s,l)=>s+(l.hours||0),0); }
+function fmtMoney(n){ return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function fmtHMS(sec){ const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=Math.floor(sec%60);return`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+function esc(s){ if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function monthKey(d){ return d.slice(0,7); }
+function isoDate(mOff,day){ const d=new Date();d.setMonth(d.getMonth()+mOff,day||1);return d.toISOString().slice(0,10); }
+
+// ═══ DEFAULT DATA ═══
+function defaultClients(){
+  const C=(o)=>({id:uid(),deliverables:[],timeLogs:[],links:[],...o});
+  return [
+    C({name:'The Diamond Girls',type:'Shopify Audit + SEO',contract:3500,retainer:1200,committed:10,status:'active',
+      notes:'Luxury jewelry boutique Boise. 30-item Shopify audit done. Diamond School deck rebuilt.',
+      links:[{id:uid(),label:'Project Notion',type:'notion',url:''},{id:uid(),label:'Client Google Drive',type:'gdrive',url:''}],
+      deliverables:[{id:uid(),text:'Shopify site audit (30-item)',done:true,priority:'high'},{id:uid(),text:'Diamond School PowerPoint (16 slides)',done:true,priority:'high'},{id:uid(),text:'SEO keyword research',done:false,priority:'med'},{id:uid(),text:'Product description rewrites',done:false,priority:'med'},{id:uid(),text:'Google ranking strategy doc',done:false,priority:'low'}],
+      timeLogs:[{id:uid(),date:isoDate(0,5),hours:2,desc:'Initial audit',type:'manual'},{id:uid(),date:isoDate(0,10),hours:2.5,desc:'Diamond School deck',type:'manual'},{id:uid(),date:isoDate(-1,12),hours:3,desc:'Discovery + scope',type:'manual'},{id:uid(),date:isoDate(-1,20),hours:1.5,desc:'Client call',type:'manual'},{id:uid(),date:isoDate(-2,8),hours:4,desc:'Research',type:'manual'}]
+    }),
+    C({name:'ABCstamp',type:'Website Audit + Redesign',contract:5500,retainer:0,committed:15,status:'active',
+      notes:'Full website audit done. Lovable.dev prototype. Proposal submitted.',
+      links:[{id:uid(),label:'Lovable.dev Prototype',type:'default',url:''},{id:uid(),label:'Proposal Doc',type:'docs',url:''}],
+      deliverables:[{id:uid(),text:'Full website audit',done:true,priority:'high'},{id:uid(),text:'Client-facing proposal',done:true,priority:'high'},{id:uid(),text:'Lovable.dev build prompt',done:true,priority:'high'},{id:uid(),text:'Prototype review with client',done:false,priority:'high'},{id:uid(),text:'Final site launch',done:false,priority:'med'}],
+      timeLogs:[{id:uid(),date:isoDate(0,3),hours:3,desc:'Website audit',type:'manual'},{id:uid(),date:isoDate(0,8),hours:3,desc:'Proposal + Lovable prompt',type:'manual'},{id:uid(),date:isoDate(-1,15),hours:4,desc:'Discovery session',type:'manual'},{id:uid(),date:isoDate(-2,10),hours:2,desc:'Initial consult',type:'manual'}]
+    }),
+    C({name:'Greater Boise Aquatic Foundation',type:'Digital Infrastructure + Fundraising',contract:8000,retainer:2000,committed:30,status:'active',
+      notes:'2025 USA Paralympic Swimming Nationals. STEM grants + CAF partnerships. Contacts: Melanie Rubocki (Perkins Coie), James, Chelsea.',
+      links:[{id:uid(),label:'GBAF Notion Tracker',type:'notion',url:''},{id:uid(),label:'Sponsorship Deck',type:'gdrive',url:''},{id:uid(),label:'Grant Docs Folder',type:'gdrive',url:''}],
+      deliverables:[{id:uid(),text:'Website concept + Lovable.dev prompt',done:true,priority:'high'},{id:uid(),text:'Notion task tracker',done:true,priority:'high'},{id:uid(),text:'Corporate sponsorship page',done:true,priority:'high'},{id:uid(),text:'Laura Moore Cunningham grant app (Mar 31)',done:false,priority:'high'},{id:uid(),text:'Mission 43 partnership proposal',done:true,priority:'high'},{id:uid(),text:'Challenge Athletes Foundation proposal',done:true,priority:'med'},{id:uid(),text:'Fundraising strategy document',done:false,priority:'med'}],
+      timeLogs:[{id:uid(),date:isoDate(0,2),hours:4,desc:'Website concept + prompts',type:'manual'},{id:uid(),date:isoDate(0,7),hours:5,desc:'Sponsorship page + proposals',type:'manual'},{id:uid(),date:isoDate(0,12),hours:4,desc:'Grant application draft',type:'manual'},{id:uid(),date:isoDate(0,14),hours:5,desc:'Notion tracker + docs',type:'manual'},{id:uid(),date:isoDate(-1,5),hours:6,desc:'Discovery + strategy',type:'manual'},{id:uid(),date:isoDate(-1,18),hours:5,desc:'Infrastructure build',type:'manual'},{id:uid(),date:isoDate(-2,10),hours:4,desc:'Initial planning',type:'manual'}]
+    }),
+    C({name:'Black Label',type:'Website Copy + Marketing',contract:4500,retainer:0,committed:12,status:'active',
+      notes:'Private custom jewelry, HNW + pro athletes. Trust/protection narrative.',
+      links:[{id:uid(),label:'Copy Deck',type:'docs',url:''},{id:uid(),label:'Brand Assets',type:'figma',url:''}],
+      deliverables:[{id:uid(),text:'Marketing analysis report',done:true,priority:'high'},{id:uid(),text:'Full website copy deck',done:true,priority:'high'},{id:uid(),text:'Lovable.dev build prompt',done:true,priority:'high'},{id:uid(),text:'Client review + revisions',done:false,priority:'high'},{id:uid(),text:'Launch coordination',done:false,priority:'med'}],
+      timeLogs:[{id:uid(),date:isoDate(0,4),hours:3,desc:'Research + analysis',type:'manual'},{id:uid(),date:isoDate(0,9),hours:4,desc:'Copy deck',type:'manual'},{id:uid(),date:isoDate(0,11),hours:3,desc:'Revisions',type:'manual'},{id:uid(),date:isoDate(-1,8),hours:3,desc:'Kickoff + brief',type:'manual'}]
+    }),
+    C({name:'Mansfield & Mayo PLLC',type:'Website Launch',contract:2800,retainer:0,committed:8,status:'hold',
+      notes:'Stalled website launch. Re-engagement outreach needed.',
+      links:[{id:uid(),label:'Site Files',type:'gdrive',url:''}],
+      deliverables:[{id:uid(),text:'Re-engagement outreach sent',done:false,priority:'high'},{id:uid(),text:'Final content review',done:false,priority:'high'},{id:uid(),text:'Site launch',done:false,priority:'med'}],
+      timeLogs:[{id:uid(),date:isoDate(-1,10),hours:7,desc:'Site build + content',type:'manual'},{id:uid(),date:isoDate(-2,5),hours:4,desc:'Initial build',type:'manual'}]
+    }),
+    C({name:"Children's Museum of Idaho",type:'Relationship Maintenance',contract:0,retainer:500,committed:4,status:'active',
+      notes:'Keep-warm touchpoint. Strong future potential.',
+      links:[],
+      deliverables:[{id:uid(),text:'Touchpoint email / check-in',done:false,priority:'high'},{id:uid(),text:'Proposal for next phase',done:false,priority:'low'}],
+      timeLogs:[{id:uid(),date:isoDate(-1,20),hours:1,desc:'Initial outreach',type:'manual'},{id:uid(),date:isoDate(-2,15),hours:0.5,desc:'Research',type:'manual'}]
+    })
+  ];
+}
+
+// ═══ VIEW SWITCH ═══
+function switchView(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('tab-'+v).classList.add('active');
+  if(v==='backend')renderBackend();
+  if(v==='analytics')renderAnalytics();
+  if(v==='dashboard')renderDashSidebar();
+}
+
+// ═══ DASHBOARD ═══
+function renderDashSidebar(){
+  const rev=clients.reduce((s,c)=>s+(c.contract||0)+(c.retainer||0),0);
+  const committed=clients.reduce((s,c)=>s+(c.committed||0),0);
+  const tracked=clients.reduce((s,c)=>s+totalHours(c),0);
+  const allDels=clients.flatMap(c=>c.deliverables||[]);
+  const goalPct=Math.min(Math.round((rev/GOAL)*100),100);
+  document.getElementById('sb-revenue').textContent='$'+fmtMoney(rev);
+  document.getElementById('sb-active').textContent=clients.filter(c=>c.status==='active').length;
+  document.getElementById('sb-committed').textContent=committed.toFixed(0)+'h';
+  document.getElementById('sb-tracked').textContent=tracked.toFixed(1)+'h';
+  document.getElementById('sb-dels').textContent=allDels.filter(d=>d.done).length+'/'+allDels.length;
+  document.getElementById('sb-goal-bar').style.width=goalPct+'%';
+  document.getElementById('sb-goal-pct').textContent='$'+fmtMoney(rev)+' of $'+fmtMoney(GOAL)+' ('+goalPct+'%)';
+  document.getElementById('clientNavList').innerHTML=clients.map(c=>`
+    <div class="cnav-item${selectedClientId===c.id?' active':''}" onclick="selectClient('${c.id}')">
+      <div><div class="cnav-name">${esc(c.name)}</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px">${esc(c.type||'')}</div></div>
+      <span class="cnav-badge b-${c.status}">${c.status}</span>
+    </div>`).join('');
+}
+
+function selectClient(id){ selectedClientId=id; renderDashSidebar(); renderClientDetail(); }
+
+function renderClientDetail(){
+  const c=clients.find(x=>x.id===selectedClientId);
+  if(!c){document.getElementById('dashMain').innerHTML='<div class="empty-panel"><h3>Select a Client</h3></div>';return;}
+  const tracked=totalHours(c), committed=c.committed||0;
+  const pct=committed>0?Math.min(Math.round((tracked/committed)*100),100):0;
+  const fc=pct<70?'prog-ok':pct<90?'prog-warn':'prog-over';
+  const tv=(c.contract||0)+(c.retainer||0);
+  const rate=committed>0&&tv>0?(tv/committed).toFixed(0):'—';
+  const rem=Math.max(committed-tracked,0);
+  const isRun=activeTimer&&activeTimer.clientId===c.id;
+
+  const dels=(c.deliverables||[]).map(d=>`
+    <div class="del-row">
+      <div class="chk${d.done?' done':''}" onclick="toggleDel('${c.id}','${d.id}')">${d.done?'✓':''}</div>
+      <div class="del-text${d.done?' done':''}">${esc(d.text)}</div>
+      <span class="pri pri-${d.priority}">${d.priority}</span>
+      <button class="del-del-btn" onclick="deleteDel('${c.id}','${d.id}')">✕</button>
+    </div>`).join('');
+
+  const logs=(c.timeLogs||[]).slice().reverse().map(l=>`
+    <tr>
+      <td style="color:var(--muted2)">${l.date||''}</td>
+      <td><strong>${(l.hours||0).toFixed(2)}h</strong></td>
+      <td style="color:var(--muted2)">${esc(l.desc||'')}</td>
+      <td><span class="tag tag-${l.type||'manual'}">${l.type||'manual'}</span></td>
+      <td>
+        <button class="log-edit-btn" onclick="openEditLog('${c.id}','${l.id}')">✎</button>
+        <button class="log-del-btn" onclick="deleteLog('${c.id}','${l.id}')">✕</button>
+      </td>
+    </tr>`).join('');
+
+  const links=(c.links||[]).map(l=>rlHtml(c.id,l,true)).join('');
+  const sowHtml=c.scope?`<a class="sow-link" href="${esc(c.scope)}" target="_blank">📄 Open Scope of Work</a>`:`<div class="no-sow">No SOW link added.</div>`;
+
+  document.getElementById('dashMain').innerHTML=`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:var(--display);font-size:34px;letter-spacing:.5px;line-height:1">${esc(c.name)}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px">${esc(c.type||'')}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="cnav-badge b-${c.status}" style="font-size:11px;padding:4px 10px">${c.status}</span>
+        <button class="btn btn-ghost btn-sm" onclick="openEditClient('${c.id}')">✏ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDel('${c.id}')">✕ Remove</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+      ${mc('Contract','$'+fmtMoney(c.contract||0),'var(--accent)')}
+      ${mc('Monthly Retainer','$'+fmtMoney(c.retainer||0),'var(--success)')}
+      ${mc('Total Value','$'+fmtMoney(tv),'var(--warn)')}
+      ${mc('~Rate','$'+rate+'/hr','var(--blue)')}
+    </div>
+    <div class="timer-widget">
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:4px">Live Timer</div>
+        <div class="timer-display${isRun?'':' inactive'}" id="dash-timer-display">${isRun?'RUNNING...':fmtHMS(0)}</div>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${isRun?`<button class="btn btn-danger" onclick="stopTimer()">⏹ Stop &amp; Log</button>`:`<button class="btn btn-accent" onclick="startTimer('${c.id}')">▶ Start Timer</button>`}
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:8px">${isRun?'⚡ Timer running for '+c.name:'Click Start to begin tracking time'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Quick Add</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <input class="small-input" id="qaH" type="number" min="0" step="0.25" placeholder="hrs" style="width:65px">
+          <input class="small-input" id="qaD" placeholder="description..." style="flex:1;min-width:120px">
+          <button class="btn btn-ghost btn-sm" onclick="quickAddLog('${c.id}')">+ Log</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2)">Time Budget</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--muted2)">${tracked.toFixed(2)}h / ${committed}h — <span style="color:${pct>=100?'var(--danger)':'var(--success)'}">${rem.toFixed(1)}h remaining</span></div>
+      </div>
+      <div class="prog-bar" style="height:8px"><div class="prog-fill ${fc}" style="width:${pct}%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:5px;font-family:var(--mono);font-size:10px;color:var(--muted)"><span>0h</span><span>${pct}% used</span><span>${committed}h</span></div>
+    </div>
+    <div class="detail-grid">
+      <div>
+        <div class="section-card" style="margin-bottom:16px">
+          <div class="sc-header"><div class="sc-title">Deliverables (${(c.deliverables||[]).filter(d=>d.done).length}/${(c.deliverables||[]).length})</div></div>
+          <div class="sc-body">
+            <div class="del-list">${dels||'<div class="text-muted">No deliverables yet.</div>'}</div>
+            <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+              <input class="small-input" id="newDelT" placeholder="New deliverable..." style="flex:1;min-width:140px" onkeydown="if(event.key==='Enter')addDel('${c.id}')">
+              <select class="small-input" id="newDelP"><option value="high">High</option><option value="med" selected>Med</option><option value="low">Low</option></select>
+              <button class="btn btn-ghost btn-sm" onclick="addDel('${c.id}')">Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="sc-header"><div class="sc-title">Time Log (${tracked.toFixed(2)}h total)</div></div>
+          <div class="sc-body" style="padding:0 0 10px">
+            ${(c.timeLogs||[]).length===0?'<div class="text-muted" style="padding:16px 18px">No time logged yet.</div>':`<table class="log-table"><thead><tr><th>Date</th><th>Hours</th><th>Description</th><th>Type</th><th></th></tr></thead><tbody>${logs}</tbody></table>`}
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="section-card">
+          <div class="sc-header"><div class="sc-title">Scope of Work</div></div>
+          <div class="sc-body">
+            ${sowHtml}
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <input class="small-input" id="scopeInp" type="url" placeholder="Paste URL..." value="${esc(c.scope||'')}" style="flex:1;font-size:11px">
+              <button class="btn btn-ghost btn-sm" onclick="saveScope('${c.id}')">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="sc-header"><div class="sc-title">Resource Links</div><button class="btn btn-ghost btn-xs" onclick="openLinkModal('${c.id}')">+ Add</button></div>
+          <div class="sc-body">
+            <div class="resource-links-list" id="links-${c.id}">${links||'<div class="text-muted">No links added yet.</div>'}</div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="sc-header"><div class="sc-title">Contract Values</div></div>
+          <div class="sc-body">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div><div class="be-label" style="margin-bottom:4px">Contract ($)</div><input class="be-input" id="ceC" type="number" value="${c.contract||0}" min="0" step="100"></div>
+              <div><div class="be-label" style="margin-bottom:4px">Retainer/mo ($)</div><input class="be-input" id="ceR" type="number" value="${c.retainer||0}" min="0" step="100"></div>
+              <div><div class="be-label" style="margin-bottom:4px">Hrs Committed</div><input class="be-input" id="ceH" type="number" value="${c.committed||0}" min="0" step="1"></div>
+              <button class="btn btn-ghost btn-sm" onclick="saveDashContract('${c.id}')">Update</button>
+            </div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="sc-header"><div class="sc-title">Notes</div></div>
+          <div class="sc-body"><textarea class="notes-ta" id="clientNotes" onblur="saveNotes('${c.id}')">${esc(c.notes||'')}</textarea></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function mc(label,val,color){
+  return`<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px">
+    <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px">${label}</div>
+    <div style="font-family:var(--mono);font-size:18px;font-weight:500;color:${color}">${val}</div>
+  </div>`;
+}
+
+function rlHtml(cid,l,showRm){
+  const t=l.type||'default', icon=LINK_ICONS[t]||'🔗';
+  const cls='rl-btn rl-'+(LINK_ICONS[t]?t:'default');
+  const tag=l.url?'a':'div';
+  const href=l.url?`href="${esc(l.url)}" target="_blank"`:'';
+  return`<${tag} class="${cls}" ${href}>
+    <span class="rl-icon">${icon}</span>
+    <span class="rl-label">${esc(l.label||LINK_NAMES[t]||'Link')}</span>
+    ${showRm?`<button class="rl-remove" onclick="event.preventDefault();removeLink('${cid}','${l.id}')">✕</button>`:''}
+  </${tag}>`;
+}
+
+// ─ deliverables ─
+function toggleDel(cid,did){ const c=clients.find(x=>x.id===cid),d=(c.deliverables||[]).find(x=>x.id===did);if(!c||!d)return;d.done=!d.done;save();renderClientDetail();renderDashSidebar(); }
+function deleteDel(cid,did){ const c=clients.find(x=>x.id===cid);if(!c)return;c.deliverables=(c.deliverables||[]).filter(x=>x.id!==did);save();renderClientDetail(); }
+function addDel(cid){ const t=document.getElementById('newDelT'),p=document.getElementById('newDelP');if(!t||!t.value.trim())return;const c=clients.find(x=>x.id===cid);if(!c)return;if(!c.deliverables)c.deliverables=[];c.deliverables.push({id:uid(),text:t.value.trim(),done:false,priority:p?p.value:'med'});save();renderClientDetail(); }
+// ─ scope / contracts / notes ─
+function saveScope(cid){ const i=document.getElementById('scopeInp'),c=clients.find(x=>x.id===cid);if(!c||!i)return;c.scope=i.value.trim();save();renderClientDetail(); }
+function saveDashContract(cid){ const c=clients.find(x=>x.id===cid);if(!c)return;const cv=document.getElementById('ceC'),rv=document.getElementById('ceR'),hv=document.getElementById('ceH');if(cv)c.contract=parseFloat(cv.value)||0;if(rv)c.retainer=parseFloat(rv.value)||0;if(hv)c.committed=parseFloat(hv.value)||0;save();renderClientDetail();renderDashSidebar(); }
+function saveNotes(cid){ const c=clients.find(x=>x.id===cid),el=document.getElementById('clientNotes');if(!c||!el)return;c.notes=el.value;save(); }
+// ─ time log ─
+function quickAddLog(cid){ const h=parseFloat(document.getElementById('qaH').value||0),d=document.getElementById('qaD').value.trim();if(!h||h<=0)return;const c=clients.find(x=>x.id===cid);if(!c)return;if(!c.timeLogs)c.timeLogs=[];c.timeLogs.push({id:uid(),date:today(),hours:h,desc:d||'Work session',type:'manual'});save();renderClientDetail();renderDashSidebar(); }
+function deleteLog(cid,lid){ const c=clients.find(x=>x.id===cid);if(!c)return;c.timeLogs=(c.timeLogs||[]).filter(l=>l.id!==lid);save();renderClientDetail();renderDashSidebar(); }
+function openEditLog(cid,lid){ const c=clients.find(x=>x.id===cid),l=(c.timeLogs||[]).find(x=>x.id===lid);if(!c||!l)return;editingLogCid=cid;editingLogId=lid;document.getElementById('lm-date').value=l.date||today();document.getElementById('lm-hours').value=l.hours||0;document.getElementById('lm-desc').value=l.desc||'';openModal('logModal'); }
+function saveLogEdit(){ const c=clients.find(x=>x.id===editingLogCid),l=(c.timeLogs||[]).find(x=>x.id===editingLogId);if(!c||!l)return;l.date=document.getElementById('lm-date').value;l.hours=parseFloat(document.getElementById('lm-hours').value)||0;l.desc=document.getElementById('lm-desc').value.trim();save();closeModal('logModal');renderClientDetail();renderDashSidebar();if(document.getElementById('view-backend').classList.contains('active'))renderBackend(); }
+function confirmDel(cid){ if(confirm('Remove this client? Cannot be undone.')){clients=clients.filter(c=>c.id!==cid);if(activeTimer&&activeTimer.clientId===cid)clearTimer();selectedClientId=null;save();renderDashSidebar();document.getElementById('dashMain').innerHTML='<div class="empty-panel"><h3>Client Removed</h3></div>';} }
+// ─ links ─
+function openLinkModal(cid){ linkTargetCid=cid;['lnk-label','lnk-url'].forEach(id=>document.getElementById(id).value='');document.getElementById('lnk-type').value='notion';openModal('linkModal'); }
+function saveLink(){ const label=document.getElementById('lnk-label').value.trim(),url=document.getElementById('lnk-url').value.trim(),type=document.getElementById('lnk-type').value;if(!label)return;const c=clients.find(x=>x.id===linkTargetCid);if(!c)return;if(!c.links)c.links=[];c.links.push({id:uid(),label,type,url});save();closeModal('linkModal');renderClientDetail(); }
+function removeLink(cid,lid){ const c=clients.find(x=>x.id===cid);if(!c)return;c.links=(c.links||[]).filter(l=>l.id!==lid);save();renderClientDetail(); }
+
+// ═══ TIMER ═══
+function startTimer(cid){ if(activeTimer)stopTimer();activeTimer={clientId:cid,startMs:Date.now(),intervalRef:setInterval(tickTimer,500)};renderClientDetail();updateNavTimer(); }
+function tickTimer(){ if(!activeTimer)return;const el=document.getElementById('dash-timer-display');if(el)el.textContent=fmtHMS((Date.now()-activeTimer.startMs)/1000);updateNavTimer(); }
+function stopTimer(){ if(!activeTimer)return;const h=(Date.now()-activeTimer.startMs)/3600000,cid=activeTimer.clientId;clearTimer();const c=clients.find(x=>x.id===cid);if(c){if(!c.timeLogs)c.timeLogs=[];c.timeLogs.push({id:uid(),date:today(),hours:Math.round(h*4)/4,desc:'Timer session',type:'timer'});save();}renderClientDetail();renderDashSidebar(); }
+function clearTimer(){ if(!activeTimer)return;clearInterval(activeTimer.intervalRef);activeTimer=null;updateNavTimer(); }
+function updateNavTimer(){ const pill=document.getElementById('navTimerPill'),txt=document.getElementById('navTimerText');if(!activeTimer){pill.classList.remove('running');return;}pill.classList.add('running');const c=clients.find(x=>x.id===activeTimer.clientId);txt.textContent=(c?c.name+' · ':'')+fmtHMS((Date.now()-activeTimer.startMs)/1000); }
+
+// ═══ ANALYTICS ═══
+let anMonthCount = 6;
+
+function getMonths(n){
+  const r=[];const now=new Date();
+  for(let i=n-1;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    r.push({key:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,short:MONTHS[d.getMonth()],label:MONTHS[d.getMonth()]+' '+d.getFullYear()});
+  }
+  return r;
+}
+function hrsForMo(c,mk){ return(c.timeLogs||[]).filter(l=>l.date&&l.date.slice(0,7)===mk).reduce((s,l)=>s+(l.hours||0),0); }
+function setAnRange(n){ anMonthCount=n; renderAnalytics(); }
+
+function renderAnalytics(){
+  const layout=document.getElementById('analyticsLayout');
+  const months=getMonths(anMonthCount);
+  const cur=months[months.length-1], prev=months[months.length-2];
+  const thisH=clients.reduce((s,c)=>s+hrsForMo(c,cur.key),0);
+  const prevH=clients.reduce((s,c)=>s+hrsForMo(c,prev.key),0);
+  const hTrend=prevH>0?Math.round(((thisH-prevH)/prevH)*100):(thisH>0?100:0);
+  const activeClients=clients.filter(c=>c.status==='active');
+  const committed=activeClients.reduce((s,c)=>s+(c.committed||0),0);
+  const utilPct=committed>0?Math.round((thisH/committed)*100):0;
+  const rev=clients.reduce((s,c)=>s+(c.contract||0)+(c.retainer||0),0);
+  const allTimeH=clients.reduce((s,c)=>s+totalHours(c),0);
+  const goalPct=Math.min(Math.round((rev/GOAL)*100),100);
+  const gapToGoal=Math.max(GOAL-rev,0);
+  const moTotals=months.map(m=>clients.reduce((s,c)=>s+hrsForMo(c,m.key),0));
+  const maxMoH=Math.max(...moTotals,1);
+  const sparkBars=moTotals.map(h=>`<div class="sparkbar-col" style="height:${Math.max(2,Math.round((h/maxMoH)*18))}px"></div>`).join('');
+  let cumH=0;
+  const cumData=months.map(m=>{cumH+=clients.reduce((s,c)=>s+hrsForMo(c,m.key),0);return cumH;});
+
+  layout.innerHTML=`
+    <div class="an-hdr">
+      <div><div class="an-title">Analytics</div><div class="an-sub">Month-over-month time commitment &amp; revenue intelligence</div></div>
+      <div class="mo-selector">
+        <button class="mo-btn${anMonthCount===3?' active':''}" onclick="setAnRange(3)">3 Mo</button>
+        <button class="mo-btn${anMonthCount===6?' active':''}" onclick="setAnRange(6)">6 Mo</button>
+        <button class="mo-btn${anMonthCount===12?' active':''}" onclick="setAnRange(12)">12 Mo</button>
+      </div>
+    </div>
+    <div class="revenue-goal-wrap">
+      <div><div class="rg-label">Monthly Revenue</div><div class="rg-val">$${fmtMoney(rev)}</div></div>
+      <div class="rg-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted)"><span>${goalPct}% of $250k/mo goal</span><span style="color:var(--muted2)">Gap: $${fmtMoney(gapToGoal)}</span></div>
+        <div class="rg-bar"><div class="rg-fill" style="width:${goalPct}%"></div></div>
+        <div class="gap-to-goal">Need <strong style="color:var(--accent)">$${fmtMoney(gapToGoal)}</strong> more/mo to hit goal${gapToGoal>0?' — approx '+(Math.ceil(gapToGoal/2500))+' new clients at avg $2.5k':' 🎯 Goal reached!'}</div>
+      </div>
+    </div>
+    <div class="an-grid-top">
+      <div class="an-stat-card ac">
+        <div class="an-stat-label">${cur.short} Hours</div>
+        <div class="an-stat-val" style="color:var(--accent)">${thisH.toFixed(1)}</div>
+        <div class="an-stat-sub">hours logged</div>
+        <div class="an-trend ${hTrend>0?'up':hTrend<0?'dn':'eq'}">${hTrend>=0?'▲':'▼'} ${Math.abs(hTrend)}% vs ${prev.short}</div>
+      </div>
+      <div class="an-stat-card gr">
+        <div class="an-stat-label">Utilization</div>
+        <div class="an-stat-val" style="color:${utilPct>100?'var(--danger)':utilPct>80?'var(--warn)':'var(--success)'}">${utilPct}%</div>
+        <div class="an-stat-sub">${thisH.toFixed(1)}h of ${committed}h committed</div>
+        <div class="an-trend ${utilPct>100?'dn':utilPct>80?'eq':'up'}">${utilPct>100?'⚠ Over budget':utilPct>80?'Approaching limit':'Healthy pace'}</div>
+      </div>
+      <div class="an-stat-card bl">
+        <div class="an-stat-label">All-Time Hours</div>
+        <div class="an-stat-val" style="color:var(--blue)">${allTimeH.toFixed(0)}</div>
+        <div class="an-stat-sub">across ${clients.length} clients</div>
+        <div class="an-trend eq"><div class="sparkbar">${sparkBars}</div></div>
+      </div>
+      <div class="an-stat-card or">
+        <div class="an-stat-label">Blended Rate</div>
+        <div class="an-stat-val" style="color:var(--warn)">${committed>0?'$'+Math.round(rev/committed):'—'}</div>
+        <div class="an-stat-sub">per committed hour</div>
+        <div class="an-trend eq">${committed}h total committed</div>
+      </div>
+      <div class="an-stat-card pu">
+        <div class="an-stat-label">Active Clients</div>
+        <div class="an-stat-val" style="color:var(--purple)">${activeClients.length}</div>
+        <div class="an-stat-sub">of ${clients.length} total</div>
+        <div class="an-trend eq">${clients.filter(c=>c.status==='hold').length} on hold</div>
+      </div>
+    </div>
+    <div class="an-grid-charts-3">
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">Monthly Hours — Stacked by Client</div><div class="an-card-badge">${anMonthCount} months</div></div>
+        <div class="an-card-body">
+          <div style="position:relative;height:200px"><canvas id="cHours"></canvas></div>
+          <div class="chart-legend" id="lgHours"></div>
+        </div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">${cur.short} Breakdown</div></div>
+        <div class="an-card-body">
+          <div style="position:relative;height:200px"><canvas id="cPie"></canvas></div>
+          <div class="chart-legend" id="lgPie" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="an-grid-charts">
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">Committed vs Tracked — Month by Month</div></div>
+        <div class="an-card-body">
+          <div style="position:relative;height:180px"><canvas id="cCommitted"></canvas></div>
+          <div class="chart-legend" style="margin-top:10px">
+            <div class="legend-item"><div class="legend-line" style="background:rgba(200,244,90,.5)"></div> Committed</div>
+            <div class="legend-item"><div class="legend-line" style="background:var(--blue)"></div> Tracked</div>
+          </div>
+        </div>
+      </div>
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">Cumulative Hours</div></div>
+        <div class="an-card-body">
+          <div style="position:relative;height:180px"><canvas id="cCumulative"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="an-row-full">
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">Revenue by Client</div><div class="an-card-badge">$${fmtMoney(rev)} total</div></div>
+        <div class="an-card-body"><div style="position:relative;height:${Math.max(160,clients.filter(c=>(c.contract||0)+(c.retainer||0)>0).length*36+24)}px"><canvas id="cRev"></canvas></div></div>
+      </div>
+    </div>
+    <div class="an-row-full">
+      <div class="an-card">
+        <div class="an-card-hdr"><div class="an-card-title">Client Month-over-Month Breakdown</div></div>
+        <div class="an-card-body" style="padding:0;overflow-x:auto">
+          <table class="bk-table">
+            <thead><tr><th>Client</th>${months.map(m=>`<th style="text-align:center">${m.short}</th>`).join('')}<th style="text-align:right">All-Time</th><th style="text-align:center">MoM</th><th>vs Budget</th><th style="text-align:right">Value</th></tr></thead>
+            <tbody>
+              ${clients.map((c,ci)=>{
+                const mH=months.map(m=>hrsForMo(c,m.key));
+                const tH=mH[mH.length-1],pH=mH[mH.length-2];
+                const trend=pH>0?Math.round(((tH-pH)/pH)*100):(tH>0?100:0);
+                const allH=totalHours(c);
+                const bp=c.committed>0?Math.min(Math.round((tH/c.committed)*100),999):0;
+                const col=COLORS[ci%COLORS.length];
+                const tv=(c.contract||0)+(c.retainer||0);
+                const maxSpk=Math.max(...mH,1);
+                const spk=mH.map(h=>`<div class="sparkbar-col" style="height:${Math.max(1,Math.round((h/maxSpk)*14))}px;background:${col}"></div>`).join('');
+                return`<tr>
+                  <td><div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:${col};border-radius:50%;display:inline-block;flex-shrink:0"></span><div><div style="font-weight:500;font-size:13px">${esc(c.name)}</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase">${esc(c.type||'')}</div></div></div></td>
+                  ${mH.map(h=>`<td style="text-align:center;font-family:var(--mono);font-size:11px;color:${h>0?'var(--text)':'var(--muted)'}">${h>0?h.toFixed(1):'—'}</td>`).join('')}
+                  <td style="text-align:right"><div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--accent)">${allH.toFixed(1)}h</div><div class="sparkbar" style="justify-content:flex-end">${spk}</div></td>
+                  <td style="text-align:center">${tH===0&&pH===0?'<span class="trend-chip trend-eq">—</span>':trend>=0?`<span class="trend-chip trend-up">▲${Math.abs(trend)}%</span>`:`<span class="trend-chip trend-dn">▼${Math.abs(trend)}%</span>`}</td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div style="font-family:var(--mono);font-size:11px;color:${bp>100?'var(--danger)':bp>80?'var(--warn)':'var(--muted2)'};min-width:32px">${bp}%</div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;width:60px"><div style="height:100%;width:${Math.min(bp,100)}%;background:${col};opacity:.75;border-radius:2px"></div></div></div></td>
+                  <td style="text-align:right;font-family:var(--mono);font-size:12px;color:var(--success)">$${fmtMoney(tv)}</td>
+                </tr>`;
+              }).join('')}
+              <tr style="border-top:2px solid var(--border2)">
+                <td style="font-weight:600;font-family:var(--mono);font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px">TOTALS</td>
+                ${months.map(m=>{const t=clients.reduce((s,c)=>s+hrsForMo(c,m.key),0);return`<td style="text-align:center;font-family:var(--mono);font-size:11px;font-weight:500;color:var(--accent)">${t>0?t.toFixed(1):'—'}</td>`;}).join('')}
+                <td style="text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)">${allTimeH.toFixed(1)}h</td>
+                <td></td><td></td>
+                <td style="text-align:right;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--success)">$${fmtMoney(rev)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>{drawHoursBar(months);drawPie(cur);drawCommittedVsTracked(months);drawCumulative(months,cumData);drawRevBar();},80);
+}
+
+function drawEmpty(ctx,W,H,msg){ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='13px DM Sans,sans-serif';ctx.textAlign='center';ctx.fillText(msg,W/2,H/2);}
+
+function drawHoursBar(months){
+  const cv=document.getElementById('cHours');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.parentElement.offsetWidth,H=200;cv.width=W;cv.height=H;
+  const allC=clients.filter((c)=>months.some(m=>hrsForMo(c,m.key)>0));
+  if(!allC.length){drawEmpty(ctx,W,H,'No hours logged yet');return;}
+  const moTotals=months.map(m=>allC.reduce((s,c)=>s+hrsForMo(c,m.key),0));
+  const maxH=Math.max(...moTotals,1);
+  const padL=40,padB=24,padT=10,chartH=H-padB-padT,chartW=W-padL-10;
+  ctx.clearRect(0,0,W,H);
+  for(let i=0;i<=4;i++){const y=padT+chartH*(1-i/4);ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-4,y);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(Math.round(maxH*(i/4))+'h',padL-5,y+3);}
+  const grpW=chartW/months.length;
+  months.forEach((m,mi)=>{
+    const bW=Math.max(grpW*0.58,6),bx=padL+mi*grpW+(grpW-bW)/2;let yOff=0;
+    allC.forEach((c)=>{
+      const ci=clients.indexOf(c);const h=hrsForMo(c,m.key);if(!h)return;
+      const bH=(h/maxH)*chartH,y=padT+chartH-yOff-bH;
+      ctx.fillStyle=COLORS[ci%COLORS.length]+'cc';
+      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(bx,y,bW,bH,2);else ctx.rect(bx,y,bW,bH);ctx.fill();
+      if(bH>14){ctx.fillStyle='rgba(0,0,0,.6)';ctx.font='8px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(h.toFixed(0),bx+bW/2,y+bH/2+3);}
+      yOff+=bH;
+    });
+    const tot=moTotals[mi];
+    if(tot>0){ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(tot.toFixed(0)+'h',padL+mi*grpW+grpW/2,padT+chartH-(tot/maxH)*chartH-5);}
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(m.short,padL+mi*grpW+grpW/2,H-6);
+  });
+  const lg=document.getElementById('lgHours');if(!lg)return;
+  lg.innerHTML=allC.map(c=>{const ci=clients.indexOf(c);return`<div class="legend-item"><span class="legend-dot" style="background:${COLORS[ci%COLORS.length]}"></span>${esc(c.name)}</div>`;}).join('');
+}
+
+function drawPie(cur){
+  const cv=document.getElementById('cPie');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.parentElement.offsetWidth,H=200;cv.width=W;cv.height=H;
+  const data=clients.map((c,ci)=>({name:c.name,h:hrsForMo(c,cur.key),col:COLORS[ci%COLORS.length]})).filter(d=>d.h>0);
+  const tot=data.reduce((s,d)=>s+d.h,0);
+  if(!tot){drawEmpty(ctx,W,H,'No hours in '+cur.short);return;}
+  const cx=W/2,cy=H/2-6,r=Math.min(W,H)/2-24;
+  let ang=-Math.PI/2;
+  data.forEach(d=>{
+    const sl=(d.h/tot)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,ang,ang+sl);ctx.closePath();
+    ctx.fillStyle=d.col+'bb';ctx.fill();
+    ctx.strokeStyle=d.col+'22';ctx.lineWidth=3;ctx.stroke();
+    if(d.h/tot>0.06){const mid=ang+sl/2,tx=cx+Math.cos(mid)*r*.65,ty=cy+Math.sin(mid)*r*.65;ctx.fillStyle='rgba(0,0,0,.75)';ctx.font='bold 9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(Math.round((d.h/tot)*100)+'%',tx,ty+3);}
+    ang+=sl;
+  });
+  ctx.beginPath();ctx.arc(cx,cy,r*.45,0,Math.PI*2);ctx.fillStyle='#13161A';ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.7)';ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(tot.toFixed(1)+'h',cx,cy+5);
+  const lg=document.getElementById('lgPie');if(!lg)return;
+  lg.innerHTML=data.map(d=>`<div class="legend-item"><span class="legend-dot" style="background:${d.col}"></span>${esc(d.name)} (${d.h.toFixed(1)}h)</div>`).join('');
+}
+
+function drawCommittedVsTracked(months){
+  const cv=document.getElementById('cCommitted');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.parentElement.offsetWidth,H=180;cv.width=W;cv.height=H;ctx.clearRect(0,0,W,H);
+  const committed=months.map(()=>clients.filter(c=>c.status==='active').reduce((s,c)=>s+(c.committed||0),0));
+  const tracked=months.map(m=>clients.reduce((s,c)=>s+hrsForMo(c,m.key),0));
+  const maxV=Math.max(...committed,...tracked,1);
+  const padL=40,padB=24,padT=10,chartH=H-padB-padT,chartW=W-padL-10;
+  for(let i=0;i<=4;i++){const y=padT+chartH*(1-i/4);ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-4,y);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(Math.round(maxV*(i/4))+'h',padL-5,y+3);}
+  const grpW=chartW/months.length,bW=Math.max(grpW*.55,6);
+  months.forEach((m,mi)=>{
+    const h=committed[mi],bH=(h/maxV)*chartH,x=padL+mi*grpW+(grpW-bW)/2,y=padT+chartH-bH;
+    ctx.fillStyle='rgba(200,244,90,.12)';ctx.fillRect(x,y,bW,bH);
+    ctx.strokeStyle='rgba(200,244,90,.35)';ctx.lineWidth=1;ctx.strokeRect(x,y,bW,bH);
+  });
+  months.forEach((m,mi)=>{
+    const h=tracked[mi];if(!h)return;
+    const bH=(h/maxV)*chartH,x=padL+mi*grpW+(grpW-bW)/2+bW*.15,y=padT+chartH-bH;
+    ctx.fillStyle='rgba(91,156,246,.7)';
+    if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,bW*.7,bH,[2,2,0,0]);ctx.fill();}else ctx.fillRect(x,y,bW*.7,bH);
+  });
+  months.forEach((m,mi)=>{ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(m.short,padL+mi*grpW+grpW/2,H-6);});
+}
+
+function drawCumulative(months,cumData){
+  const cv=document.getElementById('cCumulative');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.parentElement.offsetWidth,H=180;cv.width=W;cv.height=H;ctx.clearRect(0,0,W,H);
+  const maxV=Math.max(...cumData,1);
+  const padL=44,padB=24,padT=10,chartH=H-padB-padT,chartW=W-padL-10;
+  for(let i=0;i<=4;i++){const y=padT+chartH*(1-i/4);ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-4,y);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(Math.round(maxV*(i/4))+'h',padL-5,y+3);}
+  if(cumData.every(v=>v===0)){drawEmpty(ctx,W,H,'No data');return;}
+  const pts=cumData.map((v,i)=>({x:padL+i*(chartW/Math.max(months.length-1,1)),y:padT+chartH*(1-v/maxV)}));
+  ctx.beginPath();ctx.moveTo(pts[0].x,padT+chartH);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,padT+chartH);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,padT,0,padT+chartH);grad.addColorStop(0,'rgba(200,244,90,.22)');grad.addColorStop(1,'rgba(200,244,90,.02)');ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++){const cp1x=(pts[i-1].x+pts[i].x)/2;ctx.bezierCurveTo(cp1x,pts[i-1].y,cp1x,pts[i].y,pts[i].x,pts[i].y);}
+  ctx.strokeStyle='rgba(200,244,90,.85)';ctx.lineWidth=2;ctx.stroke();
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=COLORS[0];ctx.fill();});
+  months.forEach((m,mi)=>{if(mi%Math.ceil(months.length/6)!==0&&mi!==months.length-1)return;ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(m.short,padL+mi*(chartW/Math.max(months.length-1,1)),H-6);});
+  const last=pts[pts.length-1];ctx.fillStyle='rgba(200,244,90,.9)';ctx.font='bold 10px DM Mono,monospace';ctx.textAlign='left';ctx.fillText(cumData[cumData.length-1].toFixed(0)+'h',Math.min(last.x+5,W-40),last.y+4);
+}
+
+function drawRevBar(){
+  const cv=document.getElementById('cRev');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const data=clients.map((c,ci)=>({name:c.name,con:c.contract||0,ret:c.retainer||0,tot:(c.contract||0)+(c.retainer||0),col:COLORS[ci%COLORS.length]})).filter(d=>d.tot>0).sort((a,b)=>b.tot-a.tot);
+  const W=cv.parentElement.offsetWidth;
+  const bH=28,gap=8,padT=8,labelW=150,H=Math.max(160,data.length*(bH+gap)+padT*2);
+  cv.width=W;cv.height=H;ctx.clearRect(0,0,W,H);
+  if(!data.length){drawEmpty(ctx,W,H,'No revenue data');return;}
+  const maxV=data[0].tot,chartW=W-labelW-20;
+  data.forEach((d,i)=>{
+    const y=padT+i*(bH+gap);
+    const cW2=chartW*(d.con/maxV);
+    if(cW2>0){ctx.fillStyle=d.col+'bb';if(ctx.roundRect){ctx.beginPath();ctx.roundRect(labelW,y,cW2,bH,[0,0,4,4]);ctx.fill();}else ctx.fillRect(labelW,y,cW2,bH);}
+    if(d.ret>0){const rW=chartW*(d.ret/maxV);ctx.fillStyle=d.col+'44';if(ctx.roundRect){ctx.beginPath();ctx.roundRect(labelW+cW2,y,rW,bH,[0,0,4,4]);ctx.fill();}else ctx.fillRect(labelW+cW2,y,rW,bH);}
+    const sn=d.name.length>20?d.name.slice(0,19)+'…':d.name;ctx.fillStyle='rgba(255,255,255,.65)';ctx.font='11px DM Sans,sans-serif';ctx.textAlign='right';ctx.fillText(sn,labelW-10,y+bH/2+4);
+    const endX=labelW+chartW*(d.con/maxV)+chartW*(d.ret/maxV)+6;ctx.fillStyle=d.col;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('$'+fmtMoney(d.tot),Math.min(endX,W-60),y+bH/2+4);
+    if(d.ret>0&&cW2>30){ctx.fillStyle='rgba(0,0,0,.55)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('+$'+fmtMoney(d.ret)+'/mo',labelW+cW2/2,y+bH/2+3);}
+  });
+  const goalX=labelW+chartW*(GOAL/maxV);
+  if(goalX>labelW&&goalX<W-10){ctx.strokeStyle='rgba(200,244,90,.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(goalX,0);ctx.lineTo(goalX,H);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(200,244,90,.5)';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('$250k goal',goalX,H-3);}
+}
+
+
+// ═══ BACKEND ═══
+function renderBackend(){
+  const tl=clients.reduce((s,c)=>s+totalHours(c),0);
+  const tv=clients.reduce((s,c)=>s+(c.contract||0)+(c.retainer||0),0);
+  document.getElementById('be-total-logged').textContent=tl.toFixed(1)+'h';
+  document.getElementById('be-total-value').textContent='$'+fmtMoney(tv);
+  document.getElementById('beGrid').innerHTML=clients.map(renderBeCard).join('');
+}
+
+function renderBeCard(c){
+  const tracked=totalHours(c),pct=c.committed>0?Math.min(Math.round((tracked/c.committed)*100),100):0;
+  const fc=pct<70?'prog-ok':pct<90?'prog-warn':'prog-over';
+  const isRun=activeTimer&&activeTimer.clientId===c.id;
+  const logs=(c.timeLogs||[]).slice().reverse().map(l=>`
+    <tr>
+      <td><input class="be-log-inp" type="date" value="${l.date||''}" onchange="updateLog('${c.id}','${l.id}','date',this.value)"></td>
+      <td><input class="be-log-inp" type="number" min="0" step="0.25" value="${(l.hours||0).toFixed(2)}" onchange="updateLog('${c.id}','${l.id}','hours',parseFloat(this.value))"></td>
+      <td><input class="be-log-inp wide" type="text" value="${esc(l.desc||'')}" onchange="updateLog('${c.id}','${l.id}','desc',this.value)"></td>
+      <td><span class="tag tag-${l.type||'manual'}">${l.type||'manual'}</span></td>
+      <td><button class="btn btn-danger btn-xs" onclick="deleteLog('${c.id}','${l.id}');renderBackend()">✕</button></td>
+    </tr>`).join('');
+  const links=(c.links||[]).map(l=>rlHtml(c.id,l,false)).join('');
+  return`<div class="be-card">
+    <div class="be-card-header">
+      <div><div class="be-card-name">${esc(c.name)}</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px">${esc(c.type||'')}</div></div>
+      <div style="display:flex;gap:6px;align-items:center"><span class="cnav-badge b-${c.status}">${c.status}</span><button class="btn btn-ghost btn-xs" onclick="openEditClient('${c.id}')">Edit</button></div>
+    </div>
+    <div class="be-card-body">
+      <div class="timer-be">
+        <div><div class="timer-be-label">Live Timer</div><div class="timer-be-display" id="be-timer-${c.id}">${isRun?'LIVE...':fmtHMS(0)}</div></div>
+        ${isRun?`<button class="btn btn-danger btn-sm" onclick="stopTimer();renderBackend()">⏹ Stop &amp; Log</button>`:`<button class="btn btn-success btn-sm" onclick="startTimer('${c.id}');renderBackend()">▶ Start</button>`}
+      </div>
+      <div class="be-fields">
+        <div class="be-field"><div class="be-label">Contract ($)</div><input class="be-input" type="number" value="${c.contract||0}" min="0" step="100" onchange="updateField('${c.id}','contract',parseFloat(this.value));renderDashSidebar()"></div>
+        <div class="be-field"><div class="be-label">Retainer/mo ($)</div><input class="be-input" type="number" value="${c.retainer||0}" min="0" step="100" onchange="updateField('${c.id}','retainer',parseFloat(this.value));renderDashSidebar()"></div>
+        <div class="be-field"><div class="be-label">Hrs Committed</div><input class="be-input" type="number" value="${c.committed||0}" min="0" step="1" onchange="updateField('${c.id}','committed',parseFloat(this.value))"></div>
+        <div class="be-field"><div class="be-label">Status</div><select class="be-input" onchange="updateField('${c.id}','status',this.value);renderDashSidebar()"><option value="active"${c.status==='active'?' selected':''}>Active</option><option value="hold"${c.status==='hold'?' selected':''}>On Hold</option><option value="complete"${c.status==='complete'?' selected':''}>Complete</option></select></div>
+        <div class="be-field full"><div class="be-label">Scope of Work URL</div><input class="be-input" type="url" value="${esc(c.scope||'')}" placeholder="https://..." onchange="updateField('${c.id}','scope',this.value)"></div>
+        <div class="be-field full"><div class="be-label">Notes</div><textarea class="be-input" rows="2" onchange="updateField('${c.id}','notes',this.value)">${esc(c.notes||'')}</textarea></div>
+      </div>
+      ${(c.links||[]).length>0?`<div style="margin-bottom:14px"><div class="be-label" style="margin-bottom:6px">Resource Links</div><div style="display:flex;flex-direction:column;gap:5px">${links}</div></div>`:''}
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px"><span>${tracked.toFixed(2)}h logged</span><span>${pct}% of ${c.committed||0}h</span></div>
+        <div class="prog-bar"><div class="prog-fill ${fc}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="be-log-section">
+        <div class="be-log-label">Time Log — edit inline</div>
+        ${(c.timeLogs||[]).length===0?'<div class="text-muted" style="font-size:11px">No entries yet.</div>':`<table class="be-log-table"><thead><tr><th>Date</th><th>Hours</th><th>Description</th><th>Type</th><th></th></tr></thead><tbody>${logs}</tbody></table>`}
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <input class="be-log-inp" id="bqa-d-${c.id}" type="date" value="${today()}" style="width:120px">
+          <input class="be-log-inp" id="bqa-h-${c.id}" type="number" min="0" step="0.25" placeholder="hrs" style="width:65px">
+          <input class="be-log-inp wide" id="bqa-t-${c.id}" type="text" placeholder="description...">
+          <button class="btn btn-ghost btn-xs" onclick="beQA('${c.id}')">+ Add</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateField(cid,f,v){ const c=clients.find(x=>x.id===cid);if(!c)return;c[f]=v;save(); }
+function updateLog(cid,lid,f,v){ const c=clients.find(x=>x.id===cid);if(!c)return;const l=(c.timeLogs||[]).find(x=>x.id===lid);if(!l)return;l[f]=v;save();if(selectedClientId===cid)renderDashSidebar(); }
+function beQA(cid){ const d=document.getElementById(`bqa-d-${cid}`),h=document.getElementById(`bqa-h-${cid}`),t=document.getElementById(`bqa-t-${cid}`);const hrs=parseFloat(h?h.value:0);if(!hrs||hrs<=0)return;const c=clients.find(x=>x.id===cid);if(!c)return;if(!c.timeLogs)c.timeLogs=[];c.timeLogs.push({id:uid(),date:d?d.value:today(),hours:hrs,desc:(t?t.value.trim():'')||'Work session',type:'manual'});save();renderBackend();if(selectedClientId===cid){renderClientDetail();renderDashSidebar();} }
+
+// ═══ CLIENT MODAL ═══
+function openAddClient(){ editingClientId=null;document.getElementById('modalTitle').textContent='Add Client';document.getElementById('modalSaveBtn').textContent='Add Client';['f-name','f-type','f-scope','f-contract','f-retainer','f-committed','f-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-status').value='active';openModal('clientModal'); }
+function openEditClient(cid){ editingClientId=cid;const c=clients.find(x=>x.id===cid);if(!c)return;document.getElementById('modalTitle').textContent='Edit Client';document.getElementById('modalSaveBtn').textContent='Save Changes';document.getElementById('f-name').value=c.name||'';document.getElementById('f-type').value=c.type||'';document.getElementById('f-scope').value=c.scope||'';document.getElementById('f-contract').value=c.contract||'';document.getElementById('f-retainer').value=c.retainer||'';document.getElementById('f-committed').value=c.committed||'';document.getElementById('f-status').value=c.status||'active';document.getElementById('f-notes').value=c.notes||'';openModal('clientModal'); }
+function saveClient(){
+  const name=document.getElementById('f-name').value.trim();if(!name){document.getElementById('f-name').focus();return;}
+  const data={name,type:document.getElementById('f-type').value.trim(),scope:document.getElementById('f-scope').value.trim(),contract:parseFloat(document.getElementById('f-contract').value)||0,retainer:parseFloat(document.getElementById('f-retainer').value)||0,committed:parseFloat(document.getElementById('f-committed').value)||0,status:document.getElementById('f-status').value,notes:document.getElementById('f-notes').value.trim()};
+  if(editingClientId){const c=clients.find(x=>x.id===editingClientId);if(c)Object.assign(c,data);}
+  else{clients.unshift({id:uid(),...data,deliverables:[],timeLogs:[],links:[]});selectedClientId=clients[0].id;}
+  save();closeModal('clientModal');renderDashSidebar();
+  if(editingClientId===selectedClientId||!editingClientId)renderClientDetail();
+  if(document.getElementById('view-backend').classList.contains('active'))renderBackend();
+}
+
+// ═══ UTILS ═══
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function exportData(){ const b=new Blob([JSON.stringify(clients,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`crowd-promo-${today()}.json`;a.click(); }
+function importData(){ document.getElementById('importFile').click(); }
+function handleImport(e){ const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const im=JSON.parse(ev.target.result);if(Array.isArray(im)){clients=im;save();renderDashSidebar();if(document.getElementById('view-backend').classList.contains('active'))renderBackend();alert('Imported '+im.length+' clients.');}}catch(err){alert('Invalid JSON.');}};r.readAsText(f);e.target.value=''; }
+function setDate(){ const d=new Date();const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];document.getElementById('navDate').textContent=dn[d.getDay()]+' · '+MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+
+
+// ═══ PWA MANIFEST (injected inline so it works from file://) ═══
+(function(){
+  const manifest = {
+    name: "Crowd Promo — Client OS",
+    short_name: "Crowd Promo",
+    description: "Client project management & time tracking",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#080A0C",
+    theme_color: "#080A0C",
+    orientation: "landscape",
+    icons: [
+      { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23080A0C'/><rect x='10' y='10' width='80' height='80' rx='15' fill='%23C8F45A' opacity='.15'/><text y='.85em' font-size='62' x='18'>📊</text></svg>", sizes: "192x192", type: "image/svg+xml" },
+      { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23080A0C'/><rect x='10' y='10' width='80' height='80' rx='15' fill='%23C8F45A' opacity='.15'/><text y='.85em' font-size='62' x='18'>📊</text></svg>", sizes: "512x512", type: "image/svg+xml" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const el = document.getElementById('pwa-manifest-link');
+  if(el) el.href = url;
+})();
+
+// PWA install prompt
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById('pwaInstallBtn').style.display = 'flex';
+  updatePWAStatus();
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  document.getElementById('pwaInstallBtn').style.display = 'none';
+  updatePWAStatus();
+  showToast('✅ App installed! You can find it in your Applications or Start Menu.', 5000);
+});
+
+function installPWA() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(r => {
+      if (r.outcome === 'accepted') showToast('✅ Installing Crowd Promo to your desktop...', 3000);
+      deferredInstallPrompt = null;
+    });
+  } else {
+    // Not available — show instructions
+    switchNTab('pwa');
+    openModal('notifyModal');
+  }
+}
+
+function updatePWAStatus() {
+  const el = document.getElementById('pwa-install-status');
+  if (!el) return;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isStandalone) {
+    el.innerHTML = '<div class="notif-status"><span class="status-dot green"></span><span style="color:var(--success)">Running as installed app ✓</span></div>';
+    document.getElementById('pwa-modal-install-btn').textContent = '✓ Already Installed';
+    document.getElementById('pwa-modal-install-btn').disabled = true;
+  } else if (deferredInstallPrompt) {
+    el.innerHTML = '<div class="notif-status"><span class="status-dot yellow"></span><span>Ready to install — click the button below</span></div>';
+  } else {
+    el.innerHTML = '<div class="notif-status"><span class="status-dot red"></span><span style="color:var(--muted2)">Install via browser menu or host on a server for automatic install</span></div>';
+  }
+}
+
+// ═══ NOTIFICATION SETTINGS ═══
+const NOTIF_KEY = 'cpro_notif';
+let notifSettings = {
+  timer: false, daily: false, deadline: false, budget: false, 'weekly-email': false,
+  dailyTime: '08:00', timerMins: 60, weeklyDay: 5,
+  myEmail: '', recipients: [], emailMethod: 'gmail',
+  ejsService: '', ejsTemplate: '', ejsPubkey: ''
+};
+
+function loadNotifSettings() {
+  const raw = localStorage.getItem(NOTIF_KEY);
+  if (raw) try { Object.assign(notifSettings, JSON.parse(raw)); } catch(e){}
+}
+function saveNotifSettings() {
+  // Collect current UI state
+  notifSettings.dailyTime = document.getElementById('daily-time')?.value || '08:00';
+  notifSettings.timerMins = parseInt(document.getElementById('timer-remind-mins')?.value||60);
+  notifSettings.weeklyDay = parseInt(document.getElementById('weekly-day')?.value||5);
+  notifSettings.emailMethod = document.getElementById('email-method')?.value || 'gmail';
+  localStorage.setItem(NOTIF_KEY, JSON.stringify(notifSettings));
+  showToast('✅ Settings saved');
+  scheduleChecks();
+}
+function saveMyEmail() {
+  notifSettings.myEmail = document.getElementById('my-email')?.value.trim()||'';
+  saveNotifSettings();
+  showToast('✅ Your email saved');
+}
+function saveEmailJSConfig() {
+  notifSettings.ejsService = document.getElementById('ejs-service')?.value.trim()||'';
+  notifSettings.ejsTemplate = document.getElementById('ejs-template')?.value.trim()||'';
+  notifSettings.ejsPubkey = document.getElementById('ejs-pubkey')?.value.trim()||'';
+  saveNotifSettings();
+  showToast('✅ EmailJS config saved');
+}
+
+function toggleNotifSetting(key) {
+  notifSettings[key] = !notifSettings[key];
+  const btn = document.getElementById('tog-'+key);
+  if (btn) btn.classList.toggle('on', notifSettings[key]);
+  saveNotifSettings();
+}
+
+function addRecipient() {
+  const inp = document.getElementById('new-recip');
+  const email = inp?.value.trim();
+  if (!email || !email.includes('@')) return;
+  if (!notifSettings.recipients) notifSettings.recipients = [];
+  if (!notifSettings.recipients.includes(email)) {
+    notifSettings.recipients.push(email);
+    saveNotifSettings();
+    renderRecipients();
+    inp.value = '';
+  }
+}
+function removeRecipient(email) {
+  notifSettings.recipients = (notifSettings.recipients||[]).filter(r=>r!==email);
+  saveNotifSettings();
+  renderRecipients();
+}
+function renderRecipients() {
+  const el = document.getElementById('recipientList');
+  if (!el) return;
+  el.innerHTML = (notifSettings.recipients||[]).map(r=>`
+    <div class="recip-row">
+      <div class="recip-tag">${esc(r)}<button class="recip-rm" onclick="removeRecipient('${esc(r)}')">✕</button></div>
+    </div>`).join('') || '<div class="text-muted">No recipients added</div>';
+}
+
+function switchNTab(id) {
+  document.querySelectorAll('.ntab').forEach((t,i)=>{
+    const ids=['desktop','email','pwa'];
+    t.classList.toggle('active', ids[i]===id);
+  });
+  document.querySelectorAll('.ntab-panel').forEach(p=>p.classList.remove('active'));
+  const panel = document.getElementById('ntab-'+id);
+  if (panel) panel.classList.add('active');
+  if (id==='pwa') updatePWAStatus();
+  if (id==='email') renderRecipients();
+}
+
+function syncNotifUI() {
+  ['timer','daily','deadline','budget','weekly-email'].forEach(k=>{
+    const btn = document.getElementById('tog-'+k);
+    if (btn) btn.classList.toggle('on', !!notifSettings[k]);
+  });
+  const dt = document.getElementById('daily-time'); if(dt) dt.value = notifSettings.dailyTime||'08:00';
+  const tm = document.getElementById('timer-remind-mins'); if(tm) tm.value = notifSettings.timerMins||60;
+  const wd = document.getElementById('weekly-day'); if(wd) wd.value = notifSettings.weeklyDay||5;
+  const me = document.getElementById('my-email'); if(me) me.value = notifSettings.myEmail||'';
+  const em = document.getElementById('email-method'); if(em) em.value = notifSettings.emailMethod||'gmail';
+  const es = document.getElementById('ejs-service'); if(es) es.value = notifSettings.ejsService||'';
+  const et = document.getElementById('ejs-template'); if(et) et.value = notifSettings.ejsTemplate||'';
+  const ep = document.getElementById('ejs-pubkey'); if(ep) ep.value = notifSettings.ejsPubkey||'';
+  updateEmailMethod();
+  renderRecipients();
+  updateNotifPermStatus();
+}
+
+function updateEmailMethod() {
+  const m = document.getElementById('email-method')?.value;
+  const ejsConf = document.getElementById('emailjs-config');
+  if (ejsConf) ejsConf.style.display = m==='emailjs' ? 'block' : 'none';
+}
+
+// ── NOTIFICATIONS ──
+function updateNotifPermStatus() {
+  const el = document.getElementById('notif-perm-status');
+  if (!el) return;
+  if (!('Notification' in window)) {
+    el.innerHTML = '<span class="status-dot red"></span><span style="color:var(--danger)">Notifications not supported in this browser</span>';
+    return;
+  }
+  const map = {
+    granted: ['green','Notifications enabled ✓'],
+    denied: ['red','Notifications blocked — please enable in browser settings'],
+    default: ['yellow','Click "Enable Notifications" to allow desktop alerts']
+  };
+  const [dot, msg] = map[Notification.permission]||map.default;
+  el.innerHTML = `<span class="status-dot ${dot}"></span><span>${msg}</span>`;
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) { showToast('⚠ Notifications not supported'); return; }
+  Notification.requestPermission().then(p => {
+    updateNotifPermStatus();
+    if (p === 'granted') {
+      showToast('✅ Notifications enabled!');
+      new Notification('Crowd Promo', { body: 'Desktop notifications are now active.', icon: '' });
+    } else {
+      showToast('⚠ Permission denied — enable in browser settings');
+    }
+  });
+}
+
+function sendTestNotif() {
+  sendNotif('Crowd Promo Test', 'This is a test notification from your Crowd Promo dashboard!');
+}
+
+function sendNotif(title, body, tag='cpro') {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  new Notification(title, { body, tag, icon: '', badge: '' });
+}
+
+// ── SCHEDULED CHECKS ──
+let checkInterval = null;
+function scheduleChecks() {
+  if (checkInterval) clearInterval(checkInterval);
+  checkInterval = setInterval(runScheduledChecks, 60000); // every minute
+  runScheduledChecks();
+}
+function runScheduledChecks() {
+  const now = new Date();
+  const hhmm = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const dow = now.getDay();
+
+  // Daily briefing
+  if (notifSettings.daily && hhmm === (notifSettings.dailyTime||'08:00')) {
+    const active = clients.filter(c=>c.status==='active').length;
+    const overdue = clients.flatMap(c=>c.deliverables||[]).filter(d=>!d.done&&isOverdue(d.text)).length;
+    sendNotif('☀ Crowd Promo Daily Briefing', `${active} active clients · ${overdue} deliverables may be overdue`);
+    if (notifSettings['weekly-email'] && dow == notifSettings.weeklyDay) {
+      sendNowEmail('self');
+    }
+  }
+
+  // Timer reminder
+  if (notifSettings.timer && activeTimer) {
+    const mins = (Date.now() - activeTimer.startMs) / 60000;
+    const remind = notifSettings.timerMins || 60;
+    if (Math.floor(mins) === remind) {
+      const c = clients.find(x=>x.id===activeTimer.clientId);
+      sendNotif('⏱ Timer Running', `${c?.name||'A client'} timer has been running for ${remind} minutes`);
+    }
+  }
+
+  // Budget warnings
+  if (notifSettings.budget) {
+    clients.filter(c=>c.status==='active').forEach(c=>{
+      const tracked = totalHours(c);
+      const pct = c.committed > 0 ? (tracked/c.committed)*100 : 0;
+      const key = 'warned_'+c.id;
+      if (pct >= 100 && !sessionStorage.getItem(key+'_100')) {
+        sendNotif('🚨 Budget Exceeded', `${c.name} is over their committed hours!`);
+        sessionStorage.setItem(key+'_100','1');
+      } else if (pct >= 80 && !sessionStorage.getItem(key+'_80')) {
+        sendNotif('⚠ Budget Warning', `${c.name} has used ${Math.round(pct)}% of committed hours`);
+        sessionStorage.setItem(key+'_80','1');
+      }
+    });
+  }
+}
+
+function isOverdue(text) {
+  // Simple: check if deliverable text contains a date pattern like "Mar 31"
+  return /jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i.test(text);
+}
+
+// ── EMAIL SENDING ──
+function buildEmailBody(clientFilter) {
+  const now = new Date();
+  const dateStr = MONTHS[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear();
+  const targetClients = clientFilter ? clients.filter(c=>c.id===clientFilter) : clients.filter(c=>c.status==='active');
+  
+  let body = `CROWD PROMO — PROJECT STATUS REPORT
+${dateStr}
+${'='.repeat(50)}
+
+`;
+  
+  targetClients.forEach(c => {
+    const tracked = totalHours(c);
+    const pct = c.committed > 0 ? Math.round((tracked/c.committed)*100) : 0;
+    const tv = (c.contract||0)+(c.retainer||0);
+    const pending = (c.deliverables||[]).filter(d=>!d.done).length;
+    const done = (c.deliverables||[]).filter(d=>d.done).length;
+    
+    body += `CLIENT: ${c.name}
+`;
+    body += `Service: ${c.type||'—'}
+`;
+    body += `Status: ${c.status.toUpperCase()}
+`;
+    body += `Contract Value: $${fmtMoney(tv)}
+`;
+    body += `Hours: ${tracked.toFixed(1)}h logged / ${c.committed||0}h committed (${pct}%)
+`;
+    body += `Deliverables: ${done} complete, ${pending} pending
+`;
+    if (pending > 0) {
+      body += `Pending items:
+`;
+      (c.deliverables||[]).filter(d=>!d.done).forEach(d=>{
+        body += `  • ${d.text} [${d.priority}]
+`;
+      });
+    }
+    body += '\n'+('-'.repeat(40))+'\n\n';
+  });
+
+  const totalRev = clients.reduce((s,c)=>s+(c.contract||0)+(c.retainer||0),0);
+  const totalH = clients.reduce((s,c)=>s+totalHours(c),0);
+  body += `SUMMARY
+Total Revenue: $${fmtMoney(totalRev)}/mo | All-Time Hours: ${totalH.toFixed(1)}h
+Goal Progress: ${Math.round((totalRev/GOAL)*100)}% of $${fmtMoney(GOAL)}/mo
+
+`;
+  body += `Sent from Crowd Promo Client OS`;
+  return body;
+}
+
+function sendNowEmail(target) {
+  const body = buildEmailBody(target==='self' ? null : target);
+  const subject = 'Crowd Promo — Project Status Report';
+  const method = notifSettings.emailMethod || 'gmail';
+  const toEmail = target==='self' ? (notifSettings.myEmail||'') : (document.getElementById('ce-email')?.value.trim()||'');
+  const allTo = target==='self' ? [notifSettings.myEmail, ...(notifSettings.recipients||[])].filter(Boolean) : [toEmail];
+  
+  if (method === 'gmail') {
+    const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(allTo.join(','))}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank');
+  } else if (method === 'mailto') {
+    window.location.href = `mailto:${allTo.join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  } else if (method === 'emailjs') {
+    sendViaEmailJS(allTo, subject, body);
+  }
+}
+
+function sendViaEmailJS(toList, subject, body) {
+  const {ejsService,ejsTemplate,ejsPubkey} = notifSettings;
+  if (!ejsService||!ejsTemplate||!ejsPubkey) {
+    showToast('⚠ Configure EmailJS settings first');
+    return;
+  }
+  // Load EmailJS SDK
+  if (!window.emailjs) {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = () => {
+      window.emailjs.init({publicKey: ejsPubkey});
+      doSendEmailJS(toList, subject, body);
+    };
+    document.head.appendChild(s);
+  } else {
+    doSendEmailJS(toList, subject, body);
+  }
+}
+
+function doSendEmailJS(toList, subject, body) {
+  const {ejsService,ejsTemplate} = notifSettings;
+  toList.forEach(to => {
+    window.emailjs.send(ejsService, ejsTemplate, {
+      to_email: to,
+      subject: subject,
+      message: body
+    }).then(()=>showToast('✅ Email sent to '+to), e=>showToast('⚠ Email failed: '+e.text));
+  });
+}
+
+function openClientEmailModal() {
+  closeModal('notifyModal');
+  const sel = document.getElementById('ce-client');
+  if (sel) {
+    sel.innerHTML = clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    previewClientEmail();
+  }
+  openModal('clientEmailModal');
+}
+
+function previewClientEmail() {
+  const sel = document.getElementById('ce-client');
+  const prev = document.getElementById('ce-preview');
+  if (!sel||!prev) return;
+  prev.textContent = buildEmailBody(sel.value);
+}
+
+function sendClientEmail() {
+  const sel = document.getElementById('ce-client');
+  const emailEl = document.getElementById('ce-email');
+  if (!emailEl?.value.trim()) { emailEl?.focus(); showToast('⚠ Enter client email'); return; }
+  const cid = sel?.value;
+  const body = buildEmailBody(cid);
+  const c = clients.find(x=>x.id===cid);
+  const subject = `${c?.name||'Project'} — Status Update from Crowd Promo`;
+  const method = notifSettings.emailMethod || 'gmail';
+  const toEmail = emailEl.value.trim();
+  
+  if (method==='gmail') {
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,'_blank');
+  } else if (method==='mailto') {
+    window.location.href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  } else if (method==='emailjs') {
+    sendViaEmailJS([toEmail], subject, body);
+  }
+  closeModal('clientEmailModal');
+  showToast('✅ Email opened / sent!');
+}
+
+// ── TOAST ──
+function showToast(msg, duration=3000) {
+  let t = document.getElementById('cpro-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'cpro-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1e24;border:1px solid #2d3440;border-radius:10px;padding:12px 18px;font-family:DM Mono,monospace;font-size:13px;color:#EDF0F4;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:340px;box-shadow:0 8px 30px rgba(0,0,0,.5)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.style.opacity='0', duration);
+}
+
+
+// ═══ INIT ═══
+load();setDate();renderDashSidebar();loadNotifSettings();scheduleChecks();
+document.querySelectorAll('.modal-ov').forEach(el=>el.addEventListener('click',function(e){if(e.target===this)closeModal(this.id);}));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.modal-ov.open').forEach(m=>m.classList.remove('open'));
+  if((e.metaKey||e.ctrlKey)&&e.key==='n'){e.preventDefault();openAddClient();}
+  if((e.metaKey||e.ctrlKey)&&e.key===','){e.preventDefault();switchView('backend');}
+  if((e.metaKey||e.ctrlKey)&&e.key==='.'){e.preventDefault();switchView('analytics');}
+  if((e.metaKey||e.ctrlKey)&&e.key==='b'){e.preventDefault();openModal('notifyModal');syncNotifUI();}
+});
+</script>
+</body>
+</html>
