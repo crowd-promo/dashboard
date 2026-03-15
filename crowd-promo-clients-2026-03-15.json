@@ -1,0 +1,236 @@
+[
+  {
+    "id": "mmrtw0erdljdz",
+    "name": "The Diamond Girls",
+    "type": "Shopify Audit + SEO",
+    "scope": "",
+    "committed": 10,
+    "tracked": 4.5,
+    "status": "active",
+    "notes": "Luxury jewelry boutique. 30-item Shopify audit done. Diamond School deck rebuilt.",
+    "deliverables": [
+      {
+        "id": "mmrtw0erpfh9l",
+        "text": "Shopify site audit (30-item)",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0eraq8t6",
+        "text": "Diamond School PowerPoint (16 slides)",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erofet2",
+        "text": "SEO keyword research",
+        "done": false,
+        "priority": "med"
+      },
+      {
+        "id": "mmrtw0erj1qfr",
+        "text": "Product description rewrites",
+        "done": false,
+        "priority": "med"
+      },
+      {
+        "id": "mmrtw0ermollh",
+        "text": "Google ranking strategy doc",
+        "done": false,
+        "priority": "low"
+      }
+    ]
+  },
+  {
+    "id": "mmrtw0er0oua2",
+    "name": "ABCstamp",
+    "type": "Website Audit + Redesign",
+    "scope": "",
+    "committed": 15,
+    "tracked": 6,
+    "status": "active",
+    "notes": "Full website audit done. Lovable.dev prototype built. Proposal submitted.",
+    "deliverables": [
+      {
+        "id": "mmrtw0ermhuoj",
+        "text": "Full website audit",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erwqadz",
+        "text": "Client-facing proposal",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0ercaqcg",
+        "text": "Lovable.dev build prompt",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0er41qz9",
+        "text": "Prototype review with client",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0er6aoo0",
+        "text": "Final site launch",
+        "done": false,
+        "priority": "med"
+      }
+    ]
+  },
+  {
+    "id": "mmrtw0erlnpq1",
+    "name": "Greater Boise Aquatic Foundation",
+    "type": "Digital Infrastructure + Fundraising",
+    "scope": "",
+    "committed": 30,
+    "tracked": 18,
+    "status": "active",
+    "notes": "Preparing for 2025 USA Paralympic Swimming Nationals. STEM grants + CAF partnerships. Key contacts: Melanie (Perkins Coie), James, Chelsea.",
+    "deliverables": [
+      {
+        "id": "mmrtw0erluohi",
+        "text": "Website concept + Lovable.dev prompt",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erkuw2b",
+        "text": "Notion task tracker",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erljzfl",
+        "text": "Corporate sponsorship page",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erirqu9",
+        "text": "Laura Moore Cunningham Foundation grant app (Mar 31)",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0er3a59n",
+        "text": "Mission 43 partnership proposal",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0er0xcq1",
+        "text": "Challenge Athletes Foundation partnership proposal",
+        "done": true,
+        "priority": "med"
+      },
+      {
+        "id": "mmrtw0erclmx7",
+        "text": "Fundraising strategy document",
+        "done": false,
+        "priority": "med"
+      }
+    ]
+  },
+  {
+    "id": "mmrtw0er8lp4h",
+    "name": "Black Label",
+    "type": "Website Copy + Marketing",
+    "scope": "",
+    "committed": 12,
+    "tracked": 10,
+    "status": "active",
+    "notes": "Private custom jewelry house. HNW + pro athletes target market. Trust/protection narrative.",
+    "deliverables": [
+      {
+        "id": "mmrtw0er6imq7",
+        "text": "Marketing analysis report",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erzrw05",
+        "text": "Full website copy deck",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0er6i63m",
+        "text": "Lovable.dev build prompt",
+        "done": true,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erwtcjq",
+        "text": "Client review + revisions",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erxjoe8",
+        "text": "Launch coordination",
+        "done": false,
+        "priority": "med"
+      }
+    ]
+  },
+  {
+    "id": "mmrtw0ervcj1n",
+    "name": "Mansfield & Mayo PLLC",
+    "type": "Website Launch",
+    "scope": "",
+    "committed": 8,
+    "tracked": 7,
+    "status": "hold",
+    "notes": "Stalled website launch. Re-engagement outreach needed.",
+    "deliverables": [
+      {
+        "id": "mmrtw0errwp36",
+        "text": "Re-engagement outreach sent",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erhbucc",
+        "text": "Final content review",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0eryu6n1",
+        "text": "Site launch",
+        "done": false,
+        "priority": "med"
+      }
+    ]
+  },
+  {
+    "id": "mmrtw0erhl7qs",
+    "name": "Children's Museum of Idaho",
+    "type": "Relationship Maintenance",
+    "scope": "",
+    "committed": 4,
+    "tracked": 1,
+    "status": "active",
+    "notes": "Relationship touchpoint outreach. Keep warm.",
+    "deliverables": [
+      {
+        "id": "mmrtw0er736oo",
+        "text": "Touchpoint email / check-in",
+        "done": false,
+        "priority": "high"
+      },
+      {
+        "id": "mmrtw0erd02jf",
+        "text": "Proposal for next phase",
+        "done": false,
+        "priority": "low"
+      }
+    ]
+  }
+]
